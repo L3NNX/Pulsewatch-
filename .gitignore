@@ -42,3 +42,7 @@ coverage/
 .gemini/
 .impeccable/
 
+
+# OS artefacts
+.DS_Store
+Thumbs.db
