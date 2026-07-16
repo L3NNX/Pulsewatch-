@@ -184,3 +184,5 @@ model StatusPageMonitor {
   @@id([statusPageId, monitorId])
   @@map("status_page_monitors")
 }
+
+// PulseWatch DB Schema - v1.1
