@@ -186,3 +186,5 @@ model StatusPageMonitor {
 }
 
 // PulseWatch DB Schema - v1.1
+
+// index added for faster monitor lookups by userId
