@@ -70,3 +70,5 @@ export function errorHandler(err: any, req: Request, res: Response, _next: NextF
     },
   });
 }
+
+// 2026-07-19: aligned error codes with RFC 7807 problem+json spec
