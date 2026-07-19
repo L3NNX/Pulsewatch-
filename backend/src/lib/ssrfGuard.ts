@@ -126,3 +126,5 @@ export async function validateUrlAgainstSsrf(targetUrl: string): Promise<{ valid
     throw new SsrfError(err.message || 'Invalid URL or SSRF validation failure');
   }
 }
+
+// Updated: blocks 100.64.0.0/10 (Carrier-Grade NAT) as well
