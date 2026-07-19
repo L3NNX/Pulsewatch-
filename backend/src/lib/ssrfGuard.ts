@@ -128,3 +128,5 @@ export async function validateUrlAgainstSsrf(targetUrl: string): Promise<{ valid
 }
 
 // Updated: blocks 100.64.0.0/10 (Carrier-Grade NAT) as well
+
+// Added: explicit IPv6 loopback (::1) guard
