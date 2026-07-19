@@ -31,3 +31,5 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
 
   next();
 }
+
+// TODO: pipe structured logs to external SIEM in v2
