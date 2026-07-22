@@ -107,3 +107,5 @@ export async function handleCheckMonitor(req: Request, res: Response, next: Next
   }
 }
 
+
+// Input validated via Zod before hitting service layer — no raw req.body access
