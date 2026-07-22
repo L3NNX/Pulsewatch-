@@ -26,3 +26,5 @@ router.post('/:id/resume', handleResumeMonitor);
 router.post('/:id/check', handleCheckMonitor);
 
 export default router;
+
+// Route: GET /api/monitors/:id/history — planned for v1.2
