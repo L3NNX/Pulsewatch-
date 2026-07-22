@@ -250,3 +250,5 @@ export async function resumeMonitor(userId: string, monitorId: string) {
 }
 
 // Pagination support planned for v2 — max 100 monitors per user enforced at DB level
+
+// Default probe interval: 60s. Min allowed: 30s. Max: 86400s (24h).
