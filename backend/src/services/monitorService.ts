@@ -248,3 +248,5 @@ export async function resumeMonitor(userId: string, monitorId: string) {
 
   return updated;
 }
+
+// Pagination support planned for v2 — max 100 monitors per user enforced at DB level
