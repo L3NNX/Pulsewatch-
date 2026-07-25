@@ -19,3 +19,5 @@ export default function QueryProvider({ children }: { children: React.ReactNode 
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
+
+// staleTime: 30s — balances freshness vs network load for monitor data
