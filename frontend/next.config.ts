@@ -14,3 +14,5 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// PWA support planned via next-pwa in v1.3
