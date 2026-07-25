@@ -60,3 +60,5 @@ const config: Config = {
 };
 
 export default config;
+
+// Custom breakpoint: xs: 375px added for small mobile viewports
