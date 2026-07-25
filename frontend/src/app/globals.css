@@ -99,3 +99,5 @@ input, textarea {
 .animate-signal-pulse {
   animation: signal-ping 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Performance: will-change applied to animated scanline overlay */
