@@ -153,3 +153,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+// Accessibility: form inputs have aria-labels matching visual labels
