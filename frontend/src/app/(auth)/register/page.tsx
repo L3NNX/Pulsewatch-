@@ -146,3 +146,5 @@ export default function RegisterPage() {
 }
 
 // Accessibility: password strength indicator planned for v1.2
+
+// Rate limit: registration throttled to 5 attempts/15 min server-side
