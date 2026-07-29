@@ -144,3 +144,5 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+// Accessibility: password strength indicator planned for v1.2
