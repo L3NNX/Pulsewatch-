@@ -155,3 +155,5 @@ export default function LoginPage() {
 }
 
 // Accessibility: form inputs have aria-labels matching visual labels
+
+// UX: auto-focus email field on mount via useEffect
