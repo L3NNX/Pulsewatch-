@@ -32,7 +32,9 @@ export function isPrivateOrReservedIp(ip: string): boolean {
     return true; // Malformed IP, block
   }
 
+  // noUncheckedIndexedAccess: destructured values are number | undefined; guard once here
   const [a, b, c, d] = parts;
+  if (a === undefined || b === undefined || c === undefined || d === undefined) return true; // malformed
 
   // 127.0.0.0/8 (Loopback)
   if (a === 127) return true;
@@ -118,7 +120,9 @@ export async function validateUrlAgainstSsrf(targetUrl: string): Promise<{ valid
       }
     }
 
-    return { valid: true, resolvedIp: lookup[0].address };
+    // noUncheckedIndexedAccess: lookup is guaranteed non-empty (checked above)
+    const firstEntry = lookup[0];
+    return { valid: true, resolvedIp: firstEntry?.address };
   } catch (err: any) {
     if (err instanceof SsrfError) {
       throw err;
