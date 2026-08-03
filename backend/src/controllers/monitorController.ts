@@ -54,7 +54,9 @@ export async function handleCreateMonitor(req: Request, res: Response, next: Nex
 
 export async function handleGetMonitor(req: Request, res: Response, next: NextFunction) {
   try {
-    const monitor = await getMonitorById(req.user!.id, req.params.id);
+    const id = req.params['id'];
+    if (!id) { res.status(400).json({ error: { code: 'INVALID_ID', message: 'Monitor ID required' } }); return; }
+    const monitor = await getMonitorById(req.user!.id, id);
     res.status(200).json({ monitor });
   } catch (err) {
     next(err);
@@ -63,8 +65,10 @@ export async function handleGetMonitor(req: Request, res: Response, next: NextFu
 
 export async function handleUpdateMonitor(req: Request, res: Response, next: NextFunction) {
   try {
+    const id = req.params['id'];
+    if (!id) { res.status(400).json({ error: { code: 'INVALID_ID', message: 'Monitor ID required' } }); return; }
     const data = updateMonitorSchema.parse(req.body);
-    const monitor = await updateMonitor(req.user!.id, req.params.id, data);
+    const monitor = await updateMonitor(req.user!.id, id, data);
     res.status(200).json({ monitor });
   } catch (err) {
     next(err);
@@ -73,7 +77,9 @@ export async function handleUpdateMonitor(req: Request, res: Response, next: Nex
 
 export async function handleDeleteMonitor(req: Request, res: Response, next: NextFunction) {
   try {
-    const result = await deleteMonitor(req.user!.id, req.params.id);
+    const id = req.params['id'];
+    if (!id) { res.status(400).json({ error: { code: 'INVALID_ID', message: 'Monitor ID required' } }); return; }
+    const result = await deleteMonitor(req.user!.id, id);
     res.status(200).json(result);
   } catch (err) {
     next(err);
@@ -82,7 +88,9 @@ export async function handleDeleteMonitor(req: Request, res: Response, next: Nex
 
 export async function handlePauseMonitor(req: Request, res: Response, next: NextFunction) {
   try {
-    const monitor = await pauseMonitor(req.user!.id, req.params.id);
+    const id = req.params['id'];
+    if (!id) { res.status(400).json({ error: { code: 'INVALID_ID', message: 'Monitor ID required' } }); return; }
+    const monitor = await pauseMonitor(req.user!.id, id);
     res.status(200).json({ monitor });
   } catch (err) {
     next(err);
@@ -91,7 +99,9 @@ export async function handlePauseMonitor(req: Request, res: Response, next: Next
 
 export async function handleResumeMonitor(req: Request, res: Response, next: NextFunction) {
   try {
-    const monitor = await resumeMonitor(req.user!.id, req.params.id);
+    const id = req.params['id'];
+    if (!id) { res.status(400).json({ error: { code: 'INVALID_ID', message: 'Monitor ID required' } }); return; }
+    const monitor = await resumeMonitor(req.user!.id, id);
     res.status(200).json({ monitor });
   } catch (err) {
     next(err);
@@ -100,7 +110,9 @@ export async function handleResumeMonitor(req: Request, res: Response, next: Nex
 
 export async function handleCheckMonitor(req: Request, res: Response, next: NextFunction) {
   try {
-    const result = await checkMonitorNow(req.user!.id, req.params.id);
+    const id = req.params['id'];
+    if (!id) { res.status(400).json({ error: { code: 'INVALID_ID', message: 'Monitor ID required' } }); return; }
+    const result = await checkMonitorNow(req.user!.id, id);
     res.status(200).json({ result });
   } catch (err) {
     next(err);
