@@ -1,31 +1,18 @@
-# Design System: PulseWatch (NOC War Room Console)
+# Design System: Brutalist-Lite B2C SaaS (Anton & Golden Yellow)
 
 <!-- impeccable:design-schema 1 -->
 
-## Visual World: NOC War Room Console
+## Visual World: Brutalist-Lite High-Contrast SaaS
 
-The interface is a mission-critical network operations center console—phosphor green on cathode-ray near-black, zone status panels flanking a bold condensed display headline, and hardware-beveled chamfered action controls. It rejects generic SaaS AI slop in favor of authentic telecommunications and aerospace monitoring aesthetics.
+A bold, modern B2C SaaS experience with a high-contrast editorial feel. The design pairs aggressive display typography (**Anton**) with clean, sophisticated sans-serif body copy (**Satoshi**), powered by a striking color palette of **Golden Yellow (#ffe17c)** highlights against **Charcoal (#171e19)** and **Pure White (#ffffff)** backgrounds.
 
-### Core Principles
-1. **Mission-Critical Realism**:
-   - The page is not a marketing brochure; it is an active operations console.
-   - Live hardware status indicators, pulsing radar indicators, real-time UTC clock.
-   - Dual-encoding accessibility across all status indicators (color + distinct textual state + icon).
-2. **Typography with Gravitas**:
-   - **Display Headings**: `Barlow Condensed` (Bold/Black, uppercase, tight tracking `-0.02em` to `-0.03em`).
-   - **Terminal & Telemetry**: `Share Tech Mono` (monospace, crisp scanline readability, tabular figures).
-3. **Phosphor Material Palette**:
-   - **Cathode Ground (`--noc-bg`)**: `#060b10` (deep CRT cathode black).
-   - **Surface Card (`--noc-bg-surface`)**: `#0a121a` (deep slate navy console chassis).
-   - **Primary Phosphor (`--noc-green`)**: `#00ff88` (high-voltage phosphor green with subtle glow).
-   - **Warning Amber (`--noc-amber`)**: `#ffa000` (cautionary signal for degraded latency/503).
-   - **Critical Red (`--noc-red`)**: `#ff3030` (pulsing critical alarm for outages/timeouts).
-   - **Borders (`--noc-border`)**: `rgba(0, 255, 136, 0.16)` (subtle phosphor trace lines).
-4. **Physical Textures**:
-   - **Scanlines**: Repeating horizontal scanlines overlay (`rgba(0, 0, 0, 0.22)`).
-   - **Cathode Grid**: 48px phosphor grid lines (`rgba(0, 255, 136, 0.035)`).
-   - **Vignette**: Radial cathode decay around screen perimeter.
-   - **Hardware Bezel**: 45-degree chamfered polygon clip-paths on primary action buttons.
+### Core DNA
+- **Aggressive Display Typography**: Headlines set in **Anton** (uppercase, `leading-[0.9]`, font sizes scaling from `text-6xl` to `text-9xl`).
+- **Clean Body Sans**: Paragraphs, labels, and UI controls set in **Satoshi** (weights 400, 500, 700).
+- **Golden Yellow Highlights**: `#ffe17c` primary accent used for high-impact CTAs, badge dots, stars, and 15-degree rotated headline highlight backplates.
+- **Alternating Sections**: High-contrast rhythm alternating between Pure White (`#ffffff`), Deep Charcoal (`#171e19`), Dark Gray (`#272727`), and radiant Golden Yellow (`#ffe17c`).
+- **40px Grid Pattern**: `background-size: 40px 40px` linear gradient using `#b7c6c220`.
+- **Micro-Interactions**: Smooth 300ms `cubic-bezier(0.4, 0, 0.2, 1)` transitions on cards, buttons, and mockup elements.
 
 ---
 
@@ -33,37 +20,43 @@ The interface is a mission-critical network operations center console—phosphor
 
 | Token | Hex / Value | Usage |
 |---|---|---|
-| `--noc-bg` | `#060b10` | App background canvas |
-| `--noc-bg-surface` | `#0a121a` | Console panels and sidebar racks |
-| `--noc-green` | `#00ff88` | Operational state (UP), primary CTAs, radar pulse |
-| `--noc-amber` | `#ffa000` | Warning state (SLOW/503), degraded performance |
-| `--noc-red` | `#ff3030` | Outage state (CRIT/DOWN), incident badges |
-| `--noc-border` | `rgba(0, 255, 136, 0.16)` | Hardware bezel borders and dividers |
-| `--noc-text-bright` | `#e0f0e8` | Primary text and headings |
-| `--noc-text-muted` | `rgba(224, 240, 232, 0.55)` | Secondary labels and descriptions |
-| `--noc-text-faint` | `rgba(224, 240, 232, 0.35)` | Metadata, coordinates, and version tags |
+| **Golden Yellow** | `#ffe17c` | Primary CTAs, headline accents, rating stars, active indicators, final CTA bg |
+| **Charcoal** | `#171e19` | Dark section background, problem card, pill buttons, primary text in light mode |
+| **Dark Gray** | `#272727` | Solution card background, dark panel accents |
+| **Sage** | `#b7c6c2` | Grid hairlines, secondary dark-section text, border accents |
+| **White** | `#ffffff` | Light section background, cards, input backgrounds |
+| **Light Gray** | `#f8f9fa` | Bento feature card backgrounds |
 
 ---
 
-## Component Layout Standards
+## Key Section Blueprints
 
-### Top Hardware Status Bar
-- Sticky 48px status bar with brand radar logo, version tag (`NOC CONSOLE v4.1.2`), global health pulse (`● ALL SYSTEMS NOMINAL`), live UTC clock, and quick navigation.
+### 1. Navigation
+- Fixed header (`h-20`) with `#ffffff/90%` backdrop blur.
+- Logo: 'Anton' (`text-3xl`, uppercase) with a `#ffe17c` golden period (`PULSEWATCH.`).
+- Center: Clean Satoshi navigation links with hover color shifts.
+- Right: Text-only Login link and pill-shaped Charcoal button (`rounded-full px-6`).
 
-### 3-Column Mission Control Console
-1. **Left Panel: Service Zones**:
-   - Live service list (Production API, Auth, Payment Gateway, CDN, Webhook Relay, Database, Search).
-   - RAG (Red/Amber/Green) status indicators with live uptime percentages and response times.
-2. **Center Stage: Core Hook**:
-   - Monospace eyebrow tag with pulsing green beacon.
-   - 82px Barlow Condensed headline: `KNOW BEFORE YOUR USERS DO.`
-   - Chamfered hardware bezel CTAs (`LAUNCH CONSOLE →`, `OPEN LIVE DASHBOARD`).
-   - 4-cell industrial metrics rack (38ms Avg Latency, 99.98% 30d Consensus, 1,440 Probes/Day, < 3s Incident TTD).
-3. **Right Panel: Live Incident Log & AI Postmortem**:
-   - Real-time incident alert cards (CRIT/OPEN and RESOLVED).
-   - Autonomous AI incident analysis box with terminal cursor.
+### 2. Grid-Patterned Hero
+- Centered layout on 40px linear-gradient grid.
+- Pill badge with yellow dot indicator.
+- Anton 9xl headline with an angled 15-degree Golden Yellow highlight plate.
+- Side-by-side waitlist/trial input and massive Anton button.
+- Abstract 3-panel UI browser frame mockup with macOS traffic lights, active canvas, and properties inspector.
 
-### Tactical Sections Below Hero
-- **Transmission Pipeline**: 4-stage architecture pipeline (BullMQ Dispatcher → SSRF-Isolated Probe → Consensus Matrix → Omni-Channel Alert).
-- **Operational Matrix**: 6-card technical specification grid with zero fluff.
-- **Rapid Deployment**: Quick-start terminal command (`docker compose up -d`) with instant clipboard copy.
+### 3. Problem vs Solution Split
+- Full-width two-tone block:
+  - **Left (Problem / The Old Way)**: `#171e19` charcoal with red `X` icons and sage text.
+  - **Right (Solution / The PulseWatch Way)**: `#272727` dark gray with `#ffe17c` check icons and glowing border accent.
+
+### 4. 3-Column Bento Grid
+- Auto-row bento layout with 2-column hero spans.
+- Animated pulse telemetry, dark terminal code blocks, avatar stacks.
+
+### 5. Numerical Step-by-Step ("How It Works")
+- Sticky Anton headline (`text-7xl` to `text-8xl`).
+- 3 vertical step cards featuring massive `text-8xl` numerals in `#ffe17c/20%` that shift to 100% golden opacity on hover.
+
+### 6. High-Impact Final CTA
+- Full `#ffe17c` background with 10% opacity Anton watermark typography (`UPTIME NEVER SLEEPS`).
+- Charcoal CTA input and button with `hover:scale-105` transition.
