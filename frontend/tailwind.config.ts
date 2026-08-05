@@ -10,49 +10,56 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        zinc: {
-          750: '#333338',
-          850: '#1e1e22',
-          950: '#09090b',
+        background: '#ffffff',
+        foreground: '#171e19',
+        charcoal: {
+          DEFAULT: '#171e19',
+          light: '#242e27',
+          dark: '#0f1411',
         },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+        darkgray: '#272727',
+        yellow: {
+          DEFAULT: '#ffe17c',
+          hover: '#ffd850',
+          light: '#fff4cc',
         },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+        sage: {
+          DEFAULT: '#b7c6c2',
+          light: '#d2deda',
+          dark: '#93a39f',
         },
+        lightgray: '#f8f9fa',
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: '#ffe17c',
+          foreground: '#171e19',
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: '#171e19',
+          foreground: '#ffffff',
         },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
       },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+      fontFamily: {
+        anton: ['"Anton"', 'sans-serif'],
+        satoshi: ['"Satoshi"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: ['"Satoshi"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'Courier New', 'monospace'],
+      },
+      transitionTimingFunction: {
+        brutalist: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      },
+      keyframes: {
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(calc(-100% - var(--gap, 1rem)))' },
+        },
+        'marquee-vertical': {
+          from: { transform: 'translateY(0)' },
+          to: { transform: 'translateY(calc(-100% - var(--gap, 1rem)))' },
+        },
+      },
+      animation: {
+        marquee: 'marquee var(--duration, 35s) linear infinite',
+        'marquee-vertical': 'marquee-vertical var(--duration, 35s) linear infinite',
       },
     },
   },
@@ -60,5 +67,3 @@ const config: Config = {
 };
 
 export default config;
-
-// Custom breakpoint: xs: 375px added for small mobile viewports
