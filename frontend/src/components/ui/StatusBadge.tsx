@@ -4,57 +4,55 @@ import { cn } from '@/lib/utils';
 export type MonitorStatus = 'UP' | 'DOWN' | 'PENDING' | 'PAUSED';
 
 interface StatusBadgeProps {
-  status: MonitorStatus;
-  size?: 'sm' | 'md' | 'lg';
+  status?: MonitorStatus;
+  label?: string;
   className?: string;
+  size?: 'sm' | 'md';
 }
 
-export function StatusBadge({ status, size = 'md', className }: StatusBadgeProps) {
-  const config = {
+export function StatusBadge({ status = 'UP', label, className, size = 'md' }: StatusBadgeProps) {
+  const statusConfig = {
     UP: {
-      label: 'OPERATIONAL',
-      dotClass: 'bg-[#00ff88] shadow-[0_0_8px_#00ff88]',
-      containerClasses: 'bg-[rgba(0,255,136,0.08)] text-[#00ff88] border-[rgba(0,255,136,0.3)]',
+      defaultLabel: 'OPERATIONAL',
+      dotColor: 'bg-[#27c93f]',
+      border: 'border-green-500/20',
+      bg: 'bg-green-500/10 text-green-700',
     },
     DOWN: {
-      label: 'OUTAGE',
-      dotClass: 'bg-[#ff3030] shadow-[0_0_8px_#ff3030] animate-pulse',
-      containerClasses: 'bg-[rgba(255,48,48,0.1)] text-[#ff3030] border-[rgba(255,48,48,0.4)]',
+      defaultLabel: 'OUTAGE',
+      dotColor: 'bg-red-500',
+      border: 'border-red-500/30',
+      bg: 'bg-red-500/10 text-red-600 font-bold',
     },
     PENDING: {
-      label: 'PROBING',
-      dotClass: 'bg-[#ffa000] shadow-[0_0_8px_#ffa000] animate-ping',
-      containerClasses: 'bg-[rgba(255,160,0,0.1)] text-[#ffa000] border-[rgba(255,160,0,0.3)]',
+      defaultLabel: 'PROBING',
+      dotColor: 'bg-[#ffe17c]',
+      border: 'border-[#ffe17c]/50',
+      bg: 'bg-[#ffe17c]/20 text-[#171e19]',
     },
     PAUSED: {
-      label: 'SUSPENDED',
-      dotClass: 'bg-zinc-500',
-      containerClasses: 'bg-zinc-900/60 text-zinc-400 border-zinc-800',
+      defaultLabel: 'PAUSED',
+      dotColor: 'bg-neutral-400',
+      border: 'border-neutral-200',
+      bg: 'bg-neutral-100 text-neutral-600',
     },
-  }[status] || {
-    label: 'UNKNOWN',
-    dotClass: 'bg-zinc-500',
-    containerClasses: 'bg-zinc-900 text-zinc-400 border-zinc-800',
-  };
-
-  const sizeClasses = {
-    sm: 'text-[10px] px-2 py-0.5 gap-1.5',
-    md: 'text-[11px] px-2.5 py-1 gap-2',
-    lg: 'text-xs px-3.5 py-1.5 gap-2.5',
-  }[size];
+  }[status];
 
   return (
     <span
       className={cn(
-        'inline-flex items-center font-mono font-semibold tracking-wider uppercase border rounded-sm select-none',
-        config.containerClasses,
-        sizeClasses,
+        'inline-flex items-center gap-2 rounded-full border px-3 py-1 font-satoshi text-xs font-bold uppercase tracking-wider select-none',
+        statusConfig.border,
+        statusConfig.bg,
+        size === 'sm' && 'text-[10px] px-2.5 py-0.5 gap-1.5',
         className
       )}
       role="status"
     >
-      <span className={cn('h-2 w-2 rounded-full shrink-0', config.dotClass)} />
-      <span>{config.label}</span>
+      <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', statusConfig.dotColor)} />
+      <span>{label || statusConfig.defaultLabel}</span>
     </span>
   );
 }
+
+export default StatusBadge;
