@@ -1,6 +1,7 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { NumberTicker } from './number-ticker';
 
 interface StatCardProps {
   title: string;
@@ -9,6 +10,9 @@ interface StatCardProps {
   icon: LucideIcon;
   variant?: 'default' | 'success' | 'danger' | 'warning';
   className?: string;
+  prefix?: string;
+  suffix?: string;
+  decimalPlaces?: number;
 }
 
 export function StatCard({
@@ -18,50 +22,61 @@ export function StatCard({
   icon: Icon,
   variant = 'default',
   className,
+  prefix = '',
+  suffix = '',
+  decimalPlaces = 0,
 }: StatCardProps) {
-  const signalIndicator = {
-    default: 'text-[rgba(0,255,136,0.6)]',
-    success: 'text-[#00ff88]',
-    danger: 'text-[#ff3030]',
-    warning: 'text-[#ffa000]',
-  }[variant];
+  const isNumeric = typeof value === 'number';
 
-  const valueColor = {
-    default: 'text-[#e0f0e8]',
-    success: 'text-[#00ff88]',
-    danger: 'text-[#ff3030]',
-    warning: 'text-[#ffa000]',
+  const dotColor = {
+    default: 'bg-[#ffe17c]',
+    success: 'bg-[#27c93f]',
+    danger: 'bg-red-500',
+    warning: 'bg-[#ffe17c]',
   }[variant];
 
   return (
     <div
       className={cn(
-        'relative border border-[rgba(0,255,136,0.16)] bg-[rgba(10,18,26,0.85)] p-4 transition-all hover:border-[rgba(0,255,136,0.35)] hover:shadow-[0_0_15px_rgba(0,255,136,0.06)]',
+        'rounded-2xl border border-[#171e19]/10 bg-white p-6 brutalist-card select-none',
         className
       )}
     >
-      <div className="flex items-center justify-between border-b border-[rgba(0,255,136,0.08)] pb-2 mb-3">
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[rgba(224,240,232,0.45)]">
-          // {title}
+      <div className="flex items-center justify-between pb-3 border-b border-[#171e19]/10 mb-3">
+        <span className="font-satoshi text-xs font-bold uppercase tracking-wider text-[#171e19]/60">
+          {title}
         </span>
-        <Icon className={cn('h-4 w-4', signalIndicator)} aria-hidden="true" />
+        <div className="flex items-center gap-2">
+          <span className={cn('h-2 w-2 rounded-full', dotColor)} />
+          <Icon className="h-4 w-4 text-[#171e19]" aria-hidden="true" />
+        </div>
       </div>
 
-      <div className="flex items-baseline gap-2">
-        <span
-          className={cn(
-            'font-["Barlow_Condensed",sans-serif] text-3xl font-extrabold tracking-tight',
-            valueColor
+      <div className="flex items-baseline justify-between">
+        <div>
+          {isNumeric ? (
+            <NumberTicker
+              value={value as number}
+              prefix={prefix}
+              suffix={suffix}
+              decimalPlaces={decimalPlaces}
+              className="font-anton text-4xl lg:text-5xl text-[#171e19] leading-none tracking-normal"
+            />
+          ) : (
+            <span className="font-anton text-4xl lg:text-5xl text-[#171e19] leading-none tracking-normal">
+              {value}
+            </span>
           )}
-        >
-          {value}
-        </span>
-        {subtitle && (
-          <span className="font-mono text-[11px] text-[rgba(224,240,232,0.45)] tracking-wide">
-            {subtitle}
-          </span>
-        )}
+        </div>
       </div>
+
+      {subtitle && (
+        <div className="mt-2 pt-2 border-t border-[#171e19]/5 font-satoshi text-xs text-[#171e19]/60 font-medium">
+          {subtitle}
+        </div>
+      )}
     </div>
   );
 }
+
+export default StatCard;
