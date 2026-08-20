@@ -1,11 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, AlertCircle, Settings, ExternalLink, LogOut, Radio } from 'lucide-react';
 import { api, User } from '@/lib/api';
-import { cn } from '@/lib/utils';
 
 interface NavbarProps {
   user?: User | null;
@@ -14,17 +12,6 @@ interface NavbarProps {
 export function Navbar({ user }: NavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const [utcTime, setUtcTime] = useState<string>('00:00:00 UTC');
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setUtcTime(now.toUTCString().split(' ')[4] + ' UTC');
-    };
-    updateTime();
-    const timer = setInterval(updateTime, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   const handleLogout = async () => {
     try {
@@ -37,104 +24,81 @@ export function Navbar({ user }: NavbarProps) {
   };
 
   const navLinks = [
-    { href: '/dashboard', label: 'MONITORS', icon: LayoutDashboard },
-    { href: '/incidents', label: 'INCIDENTS', icon: AlertCircle },
-    { href: '/settings/channels', label: 'ALERT CHANNELS', icon: Settings },
+    { href: '#features', label: 'Features' },
+    { href: '#problem-solution', label: 'Why PulseWatch' },
+    { href: '#how-it-works', label: 'How It Works' },
+    { href: '#testimonials', label: 'Reviews' },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[rgba(0,255,136,0.16)] bg-[#060b10]/95 backdrop-blur-md font-mono">
-      <div className="mx-auto flex h-13 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-2.5">
-        {/* Brand & Left Status */}
-        <div className="flex items-center gap-4 sm:gap-6">
-          <Link href="/dashboard" className="flex items-center gap-2.5 group text-decoration-none">
-            <span className="relative flex h-3.5 w-3.5 items-center justify-center">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00ff88] opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00ff88] shadow-[0_0_8px_#00ff88]" />
-            </span>
-            <span className="font-['Barlow_Condensed',sans-serif] font-black text-lg tracking-[0.16em] text-[#00ff88] uppercase drop-shadow-[0_0_8px_rgba(0,255,136,0.4)]">
-              PULSEWATCH
-            </span>
-          </Link>
-
-          <span className="hidden lg:inline text-[rgba(0,255,136,0.25)] select-none">|</span>
-          <span className="hidden lg:inline text-[11px] tracking-widest uppercase text-[rgba(224,240,232,0.4)]">
-            NOC CONSOLE v4.1.2
+    <header className="fixed top-0 left-0 right-0 z-50 h-20 bg-white/90 backdrop-blur-md border-b border-[#171e19]/10">
+      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 lg:px-8">
+        {/* Left: Logo in 'Anton' (3xl, uppercase) with a yellow period */}
+        <Link href="/" className="flex items-center group">
+          <span className="font-anton text-3xl uppercase tracking-normal text-[#171e19]">
+            PULSEWATCH<span className="text-[#ffe17c]">.</span>
           </span>
+        </Link>
 
-          <span className="hidden sm:inline text-[rgba(0,255,136,0.25)] select-none">|</span>
-          <span className="hidden sm:inline text-[11px] text-[rgba(224,240,232,0.55)]">
-            {utcTime}
-          </span>
-
-          {/* Navigation Links */}
+        {/* Center: Nav links in 'Satoshi' (sm, font-medium) */}
+        <nav className="hidden md:flex items-center gap-8">
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="font-satoshi text-sm font-medium text-[#171e19]/70 hover:text-[#171e19] transition-colors"
+            >
+              {link.label}
+            </a>
+          ))}
           {user && (
-            <nav className="hidden md:flex items-center gap-2 border-l border-[rgba(0,255,136,0.16)] pl-5">
-              {navLinks.map((link) => {
-                const isActive = pathname === link.href || (link.href !== '/dashboard' && pathname.startsWith(link.href));
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={cn(
-                      'px-3 py-1 text-[11px] tracking-wider uppercase font-semibold transition-all',
-                      isActive
-                        ? 'bg-[rgba(0,255,136,0.12)] text-[#00ff88] border border-[rgba(0,255,136,0.35)] shadow-[0_0_10px_rgba(0,255,136,0.1)]'
-                        : 'text-[rgba(224,240,232,0.55)] hover:text-[#00ff88] hover:bg-[rgba(0,255,136,0.05)] border border-transparent'
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </nav>
+            <Link
+              href="/dashboard"
+              className="font-satoshi text-sm font-bold text-[#171e19] hover:underline"
+            >
+              Dashboard
+            </Link>
           )}
-        </div>
+        </nav>
 
-        {/* Right actions */}
-        <div className="flex items-center gap-3">
+        {/* Right side: Text-only 'Login' link and a pill-shaped button */}
+        <div className="flex items-center gap-6">
           {user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Link
                 href="/status/demo"
                 target="_blank"
-                className="inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase text-[rgba(224,240,232,0.6)] hover:text-[#00ff88] border border-[rgba(0,255,136,0.2)] px-2.5 py-1 bg-[rgba(10,18,26,0.8)] transition-all hover:border-[rgba(0,255,136,0.4)]"
+                className="hidden sm:inline-block font-satoshi text-sm font-medium text-[#171e19]/70 hover:text-[#171e19]"
               >
-                <Radio className="h-3 w-3 text-[#00ff88]" />
-                <span>PUBLIC STATUS</span>
-                <ExternalLink className="h-2.5 w-2.5 text-[rgba(224,240,232,0.4)]" />
+                Public Status
               </Link>
-
-              <div className="flex items-center gap-2.5 pl-2 border-l border-[rgba(0,255,136,0.16)]">
-                <span className="text-[11px] text-[rgba(224,240,232,0.45)] hidden sm:inline">
-                  [{user.email}]
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="p-1.5 text-[rgba(224,240,232,0.5)] hover:text-[#ff3030] hover:bg-[rgba(255,48,48,0.1)] border border-transparent hover:border-[rgba(255,48,48,0.3)] transition-all"
-                  title="Sign out of console"
-                  aria-label="Sign out"
-                >
-                  <LogOut className="h-3.5 w-3.5" />
-                </button>
-              </div>
+              <Link
+                href="/dashboard"
+                className="bg-[#171e19] text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-[#272727] transition-all duration-200"
+              >
+                Open Dashboard
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-xs font-satoshi text-[#171e19]/60 hover:text-red-600"
+                title="Log out"
+              >
+                Logout
+              </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-6">
               <Link
                 href="/login"
-                className="px-3 py-1 text-[11px] tracking-wider uppercase text-[rgba(224,240,232,0.55)] hover:text-[#00ff88] transition-colors"
+                className="font-satoshi text-sm font-medium text-[#171e19]/80 hover:text-[#171e19] transition-colors"
               >
-                SIGN IN
+                Login
               </Link>
               <Link
                 href="/register"
-                className="px-3.5 py-1.5 text-xs font-['Barlow_Condensed',sans-serif] font-bold tracking-wider uppercase bg-[#00ff88] text-[#060b10] hover:shadow-[0_0_12px_rgba(0,255,136,0.5)] transition-all"
-                style={{
-                  clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))',
-                }}
+                className="bg-[#171e19] text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-[#272727] hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm"
               >
-                LAUNCH NOC →
+                Get Started Free
               </Link>
             </div>
           )}
@@ -143,3 +107,5 @@ export function Navbar({ user }: NavbarProps) {
     </header>
   );
 }
+
+export default Navbar;
