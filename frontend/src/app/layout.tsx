@@ -3,9 +3,9 @@ import './globals.css';
 import QueryProvider from '@/components/providers/QueryProvider';
 
 export const metadata: Metadata = {
-  title: 'PulseWatch | Uptime Monitoring & Public Status Pages',
+  title: 'PulseWatch | Know Before Your Users Do',
   description:
-    'Reliable, lightweight uptime monitoring, incident detection, AI-written summaries, and public status pages for developers and small teams.',
+    'High-precision HTTP probes, automated AI postmortems, and public status pages for modern SaaS teams.',
 };
 
 export default function RootLayout({
@@ -14,8 +14,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-[#060b10] text-[#e0f0e8] antialiased selection:bg-[#00ff88]/20 selection:text-[#00ff88]">
+    <html lang="en">
+      <body className="min-h-screen bg-white text-[#171e19] font-satoshi antialiased selection:bg-[#ffe17c] selection:text-[#171e19]">
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
