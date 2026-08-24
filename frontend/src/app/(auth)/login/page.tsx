@@ -52,56 +52,35 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#060b10] text-[#e0f0e8] font-mono relative overflow-hidden">
-      {/* Scanlines and Grid */}
-      <div
-        className="fixed inset-0 pointer-events-none opacity-60 z-0"
-        style={{
-          backgroundImage:
-            'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.25) 2px, rgba(0, 0, 0, 0.25) 4px)',
-        }}
-      />
-      <div
-        className="fixed inset-0 pointer-events-none opacity-40 z-0"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(0, 255, 136, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 136, 0.035) 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
-        }}
-      />
-
-      <div className="w-full max-w-sm space-y-6 relative z-10">
-        {/* Header */}
+    <div className="min-h-screen flex items-center justify-center p-6 bg-grid-pattern text-[#171e19] font-satoshi relative">
+      <div className="w-full max-w-md space-y-6 relative z-10">
+        {/* Brand header */}
         <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <span className="relative flex h-3.5 w-3.5 items-center justify-center">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00ff88] opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00ff88] shadow-[0_0_8px_#00ff88]" />
-            </span>
-            <span className="font-['Barlow_Condensed',sans-serif] font-black text-2xl tracking-[0.16em] text-[#00ff88] uppercase drop-shadow-[0_0_10px_rgba(0,255,136,0.5)]">
-              PULSEWATCH
+          <Link href="/" className="inline-block group">
+            <span className="font-anton text-4xl uppercase tracking-normal text-[#171e19]">
+              PULSEWATCH<span className="text-[#ffe17c]">.</span>
             </span>
           </Link>
-          <div className="text-[10px] text-[rgba(224,240,232,0.45)] tracking-[0.2em] uppercase">
-            // NOC CONSOLE ACCESS GATEWAY
+          <div className="text-xs font-satoshi font-bold text-[#171e19]/60 uppercase tracking-widest">
+            OPERATOR SIGN IN
           </div>
         </div>
 
-        {/* Console Chassis Box */}
-        <div className="border border-[rgba(0,255,136,0.22)] bg-[rgba(10,18,26,0.9)] p-6 space-y-5 shadow-[0_0_30px_rgba(0,255,136,0.06)]">
-          <div className="border-b border-[rgba(0,255,136,0.12)] pb-3 flex items-center justify-between">
-            <span className="text-[11px] font-bold text-[#00ff88] tracking-wider uppercase flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4" />
+        {/* Card */}
+        <div className="rounded-2xl border border-[#171e19]/10 bg-white p-8 space-y-6 shadow-2xl">
+          <div className="border-b border-[#171e19]/10 pb-4 flex items-center justify-between">
+            <span className="text-xs font-anton uppercase text-[#171e19] flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-[#171e19]" />
               AUTHENTICATE IDENTITY
             </span>
-            <span className="text-[9px] text-[rgba(224,240,232,0.4)] tracking-widest uppercase">
-              TLS 1.3
+            <span className="text-[10px] font-satoshi font-bold text-[#171e19]/50 uppercase tracking-widest">
+              SECURE TLS
             </span>
           </div>
 
           {serverError && (
-            <div className="flex items-center gap-2 border border-[#ff3030]/60 bg-[#ff3030]/10 p-2.5 text-xs text-[#ff3030]">
-              <AlertTriangle className="h-4 w-4 shrink-0 text-[#ff3030]" />
+            <div className="flex items-center gap-2.5 rounded-xl border border-red-500/30 bg-red-50 p-3 text-xs font-medium text-red-600">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-red-500" />
               <span>{serverError}</span>
             </div>
           )}
@@ -116,44 +95,39 @@ export default function LoginPage() {
             />
 
             <Input
-              label="ACCESS KEY / PASSWORD"
+              label="ACCESS SECRET / PASSWORD"
               type="password"
               placeholder="••••••••••••"
               error={errors.password?.message}
               {...register('password')}
             />
 
-            <Button type="submit" variant="primary" className="w-full mt-2" isLoading={isSubmitting}>
-              AUTHENTICATE & ENTER →
-              <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+            <Button type="submit" variant="primary" className="w-full mt-4" isLoading={isSubmitting}>
+              SIGN IN TO CONSOLE →
             </Button>
           </form>
 
           {/* Quick Demo Fill button */}
-          <div className="pt-2 border-t border-[rgba(0,255,136,0.1)]">
+          <div className="pt-4 border-t border-[#171e19]/10">
             <button
               type="button"
               onClick={handleDemoFill}
-              className="w-full py-1.5 px-3 border border-dashed border-[rgba(0,255,136,0.3)] bg-[rgba(0,255,136,0.04)] text-[11px] text-[#00ff88] hover:bg-[rgba(0,255,136,0.1)] transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-4 rounded-xl border border-dashed border-[#171e19]/20 bg-[#f8f9fa] text-xs font-satoshi text-[#171e19] hover:bg-[#ffe17c] transition-colors flex items-center justify-center gap-2 font-bold cursor-pointer"
             >
-              <Key className="h-3 w-3" />
+              <Key className="h-4 w-4" />
               AUTO-FILL DEMO CREDENTIALS
             </button>
           </div>
         </div>
 
         {/* Footer Link */}
-        <div className="text-center text-xs text-[rgba(224,240,232,0.5)]">
-          Need an operator terminal?{' '}
-          <Link href="/register" className="text-[#00ff88] hover:underline font-semibold">
-            Create account
+        <div className="text-center font-satoshi text-xs text-[#171e19]/70 font-medium">
+          Need an account?{' '}
+          <Link href="/register" className="text-[#171e19] font-bold underline hover:text-black">
+            Register Free Trial →
           </Link>
         </div>
       </div>
     </div>
   );
 }
-
-// Accessibility: form inputs have aria-labels matching visual labels
-
-// UX: auto-focus email field on mount via useEffect
