@@ -55,7 +55,7 @@ export default function DashboardPage() {
     }
   }, [isUserLoading, user, router]);
 
-  // 2. Fetch monitors with 30s polling
+  // 2. Fetch monitors with 15s polling
   const {
     data: monitorsData,
     isLoading: isMonitorsLoading,
@@ -85,30 +85,25 @@ export default function DashboardPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deleteMonitor(id),
     onSuccess: () => {
-      setDeletingMonitor(null);
       queryClient.invalidateQueries({ queryKey: ['monitors'] });
+      setDeletingMonitor(null);
     },
   });
 
+  // Manual Check
   const handleManualCheck = async (id: string) => {
+    setProbingId(id);
     try {
-      setProbingId(id);
       await api.checkMonitor(id);
       await queryClient.invalidateQueries({ queryKey: ['monitors'] });
     } catch (err) {
-      console.error('Manual probe failed:', err);
+      console.error('Manual probe error:', err);
     } finally {
-      setProbingId(null);
+      setTimeout(() => setProbingId(null), 1000);
     }
   };
 
-  // Metrics summary
-  const totalMonitors = monitors.length;
-  const operationalCount = monitors.filter((m) => m.status === 'UP').length;
-  const downCount = monitors.filter((m) => m.status === 'DOWN').length;
-  const pausedCount = monitors.filter((m) => m.status === 'PAUSED').length;
-
-  // Filter monitors
+  // Filter logic
   const filteredMonitors = monitors.filter((m) => {
     const matchesSearch =
       m.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -117,217 +112,221 @@ export default function DashboardPage() {
     return matchesSearch && matchesStatus;
   });
 
+  // Counts
+  const totalMonitors = monitors.length;
+  const operationalCount = monitors.filter((m) => m.status === 'UP').length;
+  const downCount = monitors.filter((m) => m.status === 'DOWN').length;
+  const pausedCount = monitors.filter((m) => m.status === 'PAUSED').length;
+
   if (isUserLoading) {
     return (
-      <div className="min-h-screen bg-[#060b10] flex items-center justify-center font-mono">
-        <div className="flex items-center gap-2.5 text-[#00ff88] text-xs">
-          <RefreshCw className="h-4 w-4 animate-spin text-[#00ff88]" />
-          <span className="tracking-widest">// INITIALIZING NOC TELEMETRY ENGINE...</span>
+      <div className="min-h-screen bg-white flex items-center justify-center font-satoshi">
+        <div className="rounded-2xl border border-[#171e19]/10 p-8 flex items-center gap-3 text-sm font-bold text-[#171e19] shadow-sm">
+          <RefreshCw className="h-5 w-5 animate-spin text-[#ffe17c]" />
+          <span>INITIALIZING CONSOLE...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#060b10] text-[#e0f0e8] font-mono selection:bg-[#00ff88]/20 selection:text-[#00ff88] relative">
+    <div className="min-h-screen flex flex-col bg-white text-[#171e19] font-satoshi selection:bg-[#ffe17c] selection:text-[#171e19]">
       <Navbar user={user} />
 
       {/* Main Content */}
-      <main className="flex-1 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-6 z-10">
+      <main className="flex-1 mx-auto w-full max-w-7xl px-6 lg:px-8 pt-28 pb-16 space-y-8">
         {/* Header & Main Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[rgba(0,255,136,0.16)] pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 pb-6 border-b border-[#171e19]/10">
           <div>
-            <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#00ff88] mb-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#00ff88] shadow-[0_0_6px_#00ff88]" />
-              <span>[ RADAR ACTIVE ] TELEMETRY MATRIX</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f8f9fa] border border-[#171e19]/10 font-anton text-xs uppercase text-[#171e19] mb-2">
+              <span className="h-2 w-2 rounded-full bg-[#ffe17c]" />
+              COMMAND CENTER
             </div>
-            <h1 className="font-['Barlow_Condensed',sans-serif] font-black text-3xl uppercase tracking-tight text-white flex items-center gap-3">
-              SERVICE HEALTH & TELEMETRY
+            <h1 className="font-anton text-4xl sm:text-5xl lg:text-6xl uppercase tracking-normal text-[#171e19] flex items-center gap-4">
+              MONITORS & TELEMETRY
               {isRefetching && (
-                <span className="text-[11px] font-mono text-[#00ff88] flex items-center gap-1.5 font-normal tracking-wider">
-                  <RefreshCw className="h-3 w-3 animate-spin text-[#00ff88]" />
-                  POLLING...
+                <span className="text-xs font-satoshi font-semibold text-[#171e19]/60 flex items-center gap-1.5 normal-case tracking-normal">
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin text-[#ffe17c]" />
+                  Refreshing...
                 </span>
               )}
             </h1>
-            <p className="text-xs text-[rgba(224,240,232,0.45)] mt-0.5 tracking-wider">
-              PROBES SCHEDULED EVERY 60s–300s • KERNEL RETENTION 30 DAYS
+            <p className="font-satoshi text-base text-[#171e19]/70 mt-1">
+              Live probes scheduled continuously at 60s intervals. 3-strike flap-proofing active.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <Button
-              variant="secondary"
-              size="sm"
+              variant="ghost"
+              size="md"
               onClick={() => refetch()}
-              className="gap-1.5"
+              className="gap-2"
             >
-              <RefreshCw className={`h-3 w-3 ${isRefetching ? 'animate-spin' : ''}`} />
-              SYNC
+              <RefreshCw className={`h-4 w-4 ${isRefetching ? 'animate-spin' : ''}`} />
+              Sync
             </Button>
             <Button
               variant="primary"
-              size="sm"
+              size="md"
               onClick={() => setIsCreateModalOpen(true)}
-              className="gap-1.5"
+              className="gap-2"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-4 w-4" />
               ADD MONITOR
             </Button>
           </div>
         </div>
 
-        {/* Industrial Metric Rack */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Statistical Metric Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
           <StatCard
             title="TOTAL ENDPOINTS"
             value={totalMonitors}
             subtitle="/ 10 FREE LIMIT"
             icon={Activity}
-            variant="default"
           />
           <StatCard
-            title="OPERATIONAL CONSENSUS"
+            title="OPERATIONAL SERVICES"
             value={operationalCount}
-            subtitle={totalMonitors > 0 ? `${Math.round((operationalCount / totalMonitors) * 100)}% ACTIVE` : '—'}
+            subtitle={totalMonitors > 0 ? `${Math.round((operationalCount / totalMonitors) * 100)}% HEALTHY` : '—'}
             icon={CheckCircle2}
             variant={operationalCount > 0 ? 'success' : 'default'}
           />
           <StatCard
             title="ACTIVE OUTAGES"
             value={downCount}
-            subtitle={downCount > 0 ? 'ATTENTION REQUIRED' : 'ALL SYSTEMS NOMINAL'}
+            subtitle={downCount > 0 ? 'ATTENTION REQUIRED' : 'ALL NOMINAL'}
             icon={AlertOctagon}
             variant={downCount > 0 ? 'danger' : 'default'}
           />
           <StatCard
-            title="SUSPENDED PROBES"
+            title="PAUSED PROBES"
             value={pausedCount}
-            subtitle="MANUALLY PAUSED"
+            subtitle="MANUALLY SUSPENDED"
             icon={PauseCircle}
-            variant="default"
           />
         </div>
 
         {/* Filter Bar & Search */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[rgba(0,255,136,0.5)]" />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-2">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#171e19]/40" />
             <input
               type="text"
-              placeholder="// Search endpoint name or target URL..."
+              placeholder="Search monitor by name or target URL..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full border border-[rgba(0,255,136,0.18)] bg-[rgba(10,18,26,0.85)] pl-9 pr-3 py-2 text-xs text-[#e0f0e8] placeholder:text-[rgba(224,240,232,0.3)] transition-all focus-visible:outline-none focus-visible:border-[#00ff88] focus-visible:shadow-[0_0_10px_rgba(0,255,136,0.2)]"
+              className="w-full rounded-xl border border-[#171e19]/15 bg-white pl-11 pr-4 py-3 text-sm font-satoshi text-[#171e19] placeholder:text-[#171e19]/40 focus:outline-none focus:border-[#171e19] shadow-xs"
             />
           </div>
 
-          <div className="flex items-center gap-1 p-1 border border-[rgba(0,255,136,0.18)] bg-[rgba(10,18,26,0.85)]">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#f8f9fa] border border-[#171e19]/10">
             {(['ALL', 'UP', 'DOWN', 'PAUSED'] as const).map((status) => (
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
-                className={`px-3 py-1 text-[11px] font-mono uppercase tracking-wider transition-all ${
+                className={`px-4 py-2 text-xs font-satoshi font-bold rounded-lg transition-all duration-200 ${
                   statusFilter === status
-                    ? 'bg-[#00ff88] text-[#060b10] font-bold shadow-[0_0_8px_rgba(0,255,136,0.4)]'
-                    : 'text-[rgba(224,240,232,0.5)] hover:text-[#00ff88]'
+                    ? 'bg-[#171e19] text-[#ffe17c] shadow-xs'
+                    : 'text-[#171e19]/70 hover:text-[#171e19] hover:bg-white'
                 }`}
               >
-                [{status}]
+                {status}
               </button>
             ))}
           </div>
         </div>
 
         {/* Monitors Console Table */}
-        <div className="border border-[rgba(0,255,136,0.18)] bg-[rgba(10,18,26,0.9)] shadow-[0_0_20px_rgba(0,255,136,0.03)]">
+        <div className="rounded-2xl border border-[#171e19]/10 bg-white shadow-sm overflow-hidden">
           {isMonitorsLoading ? (
-            <div className="p-6 space-y-3">
+            <div className="p-8 space-y-4">
               <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-14 w-full" />
+              <Skeleton className="h-14 w-full" />
             </div>
           ) : filteredMonitors.length === 0 ? (
-            <div className="p-12 text-center">
+            <div className="p-16 text-center">
               <EmptyState
                 icon={Activity}
-                title={monitors.length === 0 ? 'NO MONITORED ENDPOINTS ACTIVE' : 'NO MATCHING TELEMETRY RECORDS'}
+                title={monitors.length === 0 ? 'NO MONITORS CONFIGURED YET' : 'NO MATCHING MONITORS'}
                 description={
                   monitors.length === 0
-                    ? 'Deploy your first HTTP/HTTPS probe endpoint to initialize automated telemetry and instant incident alerting.'
-                    : 'Adjust query filters or clear the search criteria to inspect other active endpoints.'
+                    ? 'Deploy your first HTTP/HTTPS health probe to start automated monitoring with instant multi-channel alerts.'
+                    : 'Try clearing your search query or adjust status filters to see other services.'
                 }
-                actionLabel={monitors.length === 0 ? '+ ADD FIRST ENDPOINT' : undefined}
+                actionLabel={monitors.length === 0 ? '+ DEPLOY FIRST MONITOR' : undefined}
                 onAction={monitors.length === 0 ? () => setIsCreateModalOpen(true) : undefined}
               />
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
+              <table className="w-full text-left text-sm border-collapse">
                 <thead>
-                  <tr className="border-b border-[rgba(0,255,136,0.16)] bg-[rgba(6,11,16,0.95)] text-[rgba(0,255,136,0.7)] uppercase tracking-[0.16em] text-[10px]">
-                    <th className="py-3 px-5">// TARGET SERVICE</th>
-                    <th className="py-3 px-5">// STATUS</th>
-                    <th className="py-3 px-5">// 24H CONSENSUS</th>
-                    <th className="py-3 px-5">// LATENCY</th>
-                    <th className="py-3 px-5">// LAST PROBE</th>
-                    <th className="py-3 px-5 text-right">// COMMANDS</th>
+                  <tr className="border-b border-[#171e19]/10 bg-[#f8f9fa] text-[#171e19]/60 font-anton uppercase tracking-wider text-xs">
+                    <th className="py-4 px-6">SERVICE NAME</th>
+                    <th className="py-4 px-6">STATUS</th>
+                    <th className="py-4 px-6">24H UPTIME</th>
+                    <th className="py-4 px-6">RESPONSE</th>
+                    <th className="py-4 px-6">LAST PROBE</th>
+                    <th className="py-4 px-6 text-right">ACTIONS</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[rgba(0,255,136,0.08)] text-[11px]">
+                <tbody className="divide-y divide-[#171e19]/5 font-satoshi">
                   {filteredMonitors.map((m) => (
                     <tr
                       key={m.id}
-                      className="group hover:bg-[rgba(0,255,136,0.04)] transition-colors"
+                      className="group hover:bg-[#f8f9fa]/70 transition-colors"
                     >
                       {/* Name & Target */}
-                      <td className="py-3.5 px-5">
+                      <td className="py-5 px-6">
                         <div className="flex flex-col">
-                          <span className="font-['Barlow_Condensed',sans-serif] font-bold text-base tracking-wider uppercase text-white group-hover:text-[#00ff88] transition-colors">
+                          <span className="font-anton text-lg uppercase text-[#171e19] group-hover:text-[#171e19] transition-colors leading-tight">
                             {m.name}
                           </span>
                           <a
                             href={m.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="mt-0.5 inline-flex items-center gap-1.5 text-[11px] text-[rgba(224,240,232,0.45)] hover:text-[#00ff88] transition-colors"
+                            className="mt-1 inline-flex items-center gap-1.5 text-xs text-[#171e19]/60 hover:text-[#171e19] transition-colors"
                           >
-                            <span className="px-1.5 py-0.2 bg-[rgba(0,255,136,0.08)] border border-[rgba(0,255,136,0.2)] text-[#00ff88] text-[9px] font-bold">
+                            <span className="px-1.5 py-0.5 rounded bg-[#f8f9fa] border border-[#171e19]/10 text-[10px] font-bold text-[#171e19]">
                               {m.method}
                             </span>
-                            <span className="truncate max-w-sm font-mono">{m.url}</span>
-                            <ExternalLink className="h-2.5 w-2.5 opacity-60" />
+                            <span className="truncate max-w-sm font-mono text-xs">{m.url}</span>
+                            <ExternalLink className="h-3 w-3 opacity-60" />
                           </a>
                         </div>
                       </td>
 
                       {/* Status Badge */}
-                      <td className="py-3.5 px-5">
-                        <StatusBadge status={m.status} size="sm" />
+                      <td className="py-5 px-6">
+                        <StatusBadge status={m.status} />
                       </td>
 
                       {/* 24h Uptime */}
-                      <td className="py-3.5 px-5">
-                        <div className="space-y-1">
+                      <td className="py-5 px-6">
+                        <div className="space-y-1.5">
                           <span
-                            className={`font-bold tabular-nums ${
+                            className={`font-anton text-base tabular-nums ${
                               (m.uptime24h ?? 100) >= 99
-                                ? 'text-[#00ff88]'
+                                ? 'text-green-600'
                                 : (m.uptime24h ?? 100) >= 95
-                                ? 'text-[#ffa000]'
-                                : 'text-[#ff3030]'
+                                ? 'text-[#171e19]'
+                                : 'text-red-500 font-bold'
                             }`}
                           >
                             {(m.uptime24h ?? 100).toFixed(1)}%
                           </span>
-                          <div className="h-1.5 w-24 bg-[#060b10] border border-[rgba(0,255,136,0.15)] overflow-hidden">
+                          <div className="h-2 w-28 bg-[#f8f9fa] rounded-full border border-[#171e19]/10 overflow-hidden">
                             <div
-                              className={`h-full ${
+                              className={`h-full rounded-full ${
                                 (m.uptime24h ?? 100) >= 99
-                                  ? 'bg-[#00ff88] shadow-[0_0_6px_#00ff88]'
+                                  ? 'bg-[#27c93f]'
                                   : (m.uptime24h ?? 100) >= 95
-                                  ? 'bg-[#ffa000] shadow-[0_0_6px_#ffa000]'
-                                  : 'bg-[#ff3030] shadow-[0_0_6px_#ff3030]'
+                                  ? 'bg-[#ffe17c]'
+                                  : 'bg-red-500'
                               }`}
                               style={{ width: `${m.uptime24h ?? 100}%` }}
                             />
@@ -336,41 +335,40 @@ export default function DashboardPage() {
                       </td>
 
                       {/* Avg Response Time */}
-                      <td className="py-3.5 px-5 tabular-nums">
+                      <td className="py-5 px-6 tabular-nums">
                         {m.avgResponseTimeMs ? (
                           <span
-                            className={`font-semibold ${
+                            className={`font-anton text-base ${
                               m.avgResponseTimeMs < 200
-                                ? 'text-[#00ff88]'
+                                ? 'text-green-600'
                                 : m.avgResponseTimeMs < 800
-                                ? 'text-[#ffa000]'
-                                : 'text-[#ff3030]'
+                                ? 'text-[#171e19]'
+                                : 'text-red-500'
                             }`}
                           >
                             {m.avgResponseTimeMs}ms
                           </span>
                         ) : (
-                          <span className="text-[rgba(224,240,232,0.3)]">—</span>
+                          <span className="text-[#171e19]/30 font-satoshi">—</span>
                         )}
                       </td>
 
                       {/* Last Checked */}
-                      <td className="py-3.5 px-5 text-[rgba(224,240,232,0.5)]">
-                        {m.lastCheckedAt ? formatTimeAgo(m.lastCheckedAt) : 'JUST NOW'}
+                      <td className="py-5 px-6 text-[#171e19]/60 text-xs font-medium">
+                        {m.lastCheckedAt ? formatTimeAgo(m.lastCheckedAt) : 'Just now'}
                       </td>
 
                       {/* Actions */}
-                      <td className="py-3.5 px-5 text-right font-mono">
-                        <div className="flex items-center justify-end gap-1.5">
+                      <td className="py-5 px-6 text-right">
+                        <div className="flex items-center justify-end gap-2">
                           {/* Manual Probe Now button */}
                           <button
                             onClick={() => handleManualCheck(m.id)}
                             disabled={probingId === m.id}
-                            className="p-1.5 border border-[rgba(0,255,136,0.2)] bg-[rgba(0,255,136,0.06)] text-[#00ff88] hover:bg-[#00ff88] hover:text-[#060b10] transition-all disabled:opacity-40"
+                            className="p-2 rounded-lg border border-[#171e19]/10 bg-white text-[#171e19] hover:bg-[#ffe17c] transition-colors disabled:opacity-40"
                             title="Execute immediate probe"
-                            aria-label="Probe now"
                           >
-                            <Zap className={`h-3.5 w-3.5 ${probingId === m.id ? 'animate-bounce text-[#ffa000]' : ''}`} />
+                            <Zap className={`h-4 w-4 ${probingId === m.id ? 'animate-bounce text-[#171e19]' : ''}`} />
                           </button>
 
                           {/* Pause / Resume */}
@@ -378,42 +376,38 @@ export default function DashboardPage() {
                             <button
                               onClick={() => resumeMutation.mutate(m.id)}
                               disabled={resumeMutation.isPending}
-                              className="p-1.5 border border-[rgba(0,255,136,0.2)] text-[#00ff88] hover:bg-[rgba(0,255,136,0.15)] transition-colors"
+                              className="p-2 rounded-lg border border-[#171e19]/10 bg-white text-[#171e19] hover:bg-[#27c93f] hover:text-white transition-colors"
                               title="Resume monitor"
-                              aria-label="Resume monitor"
                             >
-                              <PlayCircle className="h-3.5 w-3.5" />
+                              <PlayCircle className="h-4 w-4" />
                             </button>
                           ) : (
                             <button
                               onClick={() => pauseMutation.mutate(m.id)}
                               disabled={pauseMutation.isPending}
-                              className="p-1.5 border border-[rgba(224,240,232,0.15)] text-[rgba(224,240,232,0.5)] hover:text-[#ffa000] hover:border-[#ffa000] hover:bg-[rgba(255,160,0,0.1)] transition-colors"
+                              className="p-2 rounded-lg border border-[#171e19]/10 bg-white text-[#171e19]/70 hover:text-[#171e19] hover:bg-neutral-100 transition-colors"
                               title="Pause monitor"
-                              aria-label="Pause monitor"
                             >
-                              <PauseCircle className="h-3.5 w-3.5" />
+                              <PauseCircle className="h-4 w-4" />
                             </button>
                           )}
 
                           {/* Edit */}
                           <button
                             onClick={() => setEditingMonitor(m)}
-                            className="p-1.5 border border-[rgba(224,240,232,0.15)] text-[rgba(224,240,232,0.5)] hover:text-[#00ff88] hover:border-[#00ff88] hover:bg-[rgba(0,255,136,0.1)] transition-colors"
+                            className="p-2 rounded-lg border border-[#171e19]/10 bg-white text-[#171e19]/70 hover:text-[#171e19] hover:bg-neutral-100 transition-colors"
                             title="Edit monitor config"
-                            aria-label="Edit monitor"
                           >
-                            <Edit className="h-3.5 w-3.5" />
+                            <Edit className="h-4 w-4" />
                           </button>
 
                           {/* Delete */}
                           <button
                             onClick={() => setDeletingMonitor(m)}
-                            className="p-1.5 border border-[rgba(224,240,232,0.15)] text-[rgba(224,240,232,0.5)] hover:text-[#ff3030] hover:border-[#ff3030] hover:bg-[rgba(255,48,48,0.1)] transition-colors"
+                            className="p-2 rounded-lg border border-[#171e19]/10 bg-white text-[#171e19]/70 hover:text-white hover:bg-red-500 hover:border-red-500 transition-colors"
                             title="Delete monitor"
-                            aria-label="Delete monitor"
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </td>
@@ -452,9 +446,9 @@ export default function DashboardPage() {
       {deletingMonitor && (
         <ConfirmDialog
           isOpen={!!deletingMonitor}
-          title="// CONFIRM ENDPOINT TERMINATION"
-          description={`Are you sure you want to permanently delete "${deletingMonitor.name}"? All historical check logs and incident history will be erased immediately.`}
-          confirmLabel="TERMINATE ENDPOINT"
+          title="DELETE MONITORED ENDPOINT"
+          description={`Are you sure you want to permanently delete "${deletingMonitor.name}"? All historical check logs and incident records will be erased immediately.`}
+          confirmLabel="DELETE NOW"
           variant="danger"
           onClose={() => setDeletingMonitor(null)}
           onConfirm={() => deleteMutation.mutate(deletingMonitor.id)}
