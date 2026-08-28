@@ -1,1165 +1,588 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-
-// NOC War Room Console — Mission-Critical Operations Center
-// Typography: Barlow Condensed (Display) & Share Tech Mono (Terminal/Monospace)
-// Palette: Phosphor Green (#00ff88), Deep Void (#060b10), Warning Amber (#ffa000), Critical Red (#ff3030)
-// Textures: CRT Scanlines, Phosphor glow, Hardware bezels, 48px grid
+import {
+  CheckCircle2,
+  XCircle,
+  ArrowRight,
+  ShieldAlert,
+  Zap,
+  Activity,
+  Cpu,
+  Lock,
+  Layers,
+  Radio,
+  Sparkles,
+  Users,
+} from 'lucide-react';
+import { Navbar } from '@/components/layout/Navbar';
+import { AbstractUIMockup } from '@/components/ui/AbstractUIMockup';
+import { BrutalistTestimonials } from '@/components/ui/BrutalistTestimonials';
+import { Marquee } from '@/components/ui/marquee';
+import { NumberTicker } from '@/components/ui/number-ticker';
 
 export default function LandingPage() {
-  const [utcTime, setUtcTime] = useState<string>('00:00:00 UTC');
-  const [selectedZone, setSelectedZone] = useState<number>(0);
-  const [copiedCmd, setCopiedCmd] = useState<boolean>(false);
+  const [heroEmail, setHeroEmail] = useState('');
+  const [ctaEmail, setCtaEmail] = useState('');
+  const [heroSubmitted, setHeroSubmitted] = useState(false);
+  const [ctaSubmitted, setCtaSubmitted] = useState(false);
 
-  useEffect(() => {
-    const updateClock = () => {
-      const now = new Date();
-      setUtcTime(
-        now.toUTCString().split(' ')[4] + ' UTC'
-      );
-    };
-    updateClock();
-    const interval = setInterval(updateClock, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const zones = [
-    { name: 'Production API', status: 'ok', uptime: '99.98%', latency: '32ms', code: '200 OK', region: 'us-east-1', checks: 1440 },
-    { name: 'Auth Service', status: 'ok', uptime: '100.0%', latency: '18ms', code: '200 OK', region: 'eu-west-1', checks: 1440 },
-    { name: 'Payment Gateway', status: 'warn', uptime: '98.12%', latency: '1,240ms', code: '503 SLOW', region: 'us-central-1', checks: 1412 },
-    { name: 'CDN Edge', status: 'ok', uptime: '99.99%', latency: '8ms', code: '200 OK', region: 'global-anycast', checks: 1440 },
-    { name: 'Webhook Relay', status: 'crit', uptime: 'DOWN', latency: 'TIMEOUT', code: 'ECONNREFUSED', region: 'ap-southeast-1', checks: 1390 },
-    { name: 'Database RO', status: 'ok', uptime: '99.94%', latency: '12ms', code: '200 OK', region: 'us-east-1', checks: 1438 },
-    { name: 'Search Cluster', status: 'ok', uptime: '99.88%', latency: '45ms', code: '200 OK', region: 'eu-central-1', checks: 1436 },
-  ];
-
-  const pipeline = [
-    {
-      step: '01',
-      title: 'BULLMQ DISPATCHER',
-      desc: 'Distributed queue with Redis-backed schedulers executing probes at strict intervals (60s to 3600s).',
-      badge: 'REDIS ENGINE',
-    },
-    {
-      step: '02',
-      title: 'SSRF-ISOLATED PROBE',
-      desc: 'Each probe resolves DNS, validates against RFC 1918 / loopback / cloud metadata IP ranges, then executes with redirect guards.',
-      badge: 'ZERO TRUST',
-    },
-    {
-      step: '03',
-      title: 'CONSENSUS MATRIX',
-      desc: 'Row-level database locks prevent race conditions. 3 consecutive failures to trigger DOWN; 2 consecutive successes to resolve.',
-      badge: 'FLAP-PROOF',
-    },
-    {
-      step: '04',
-      title: 'OMNI-CHANNEL ALERT',
-      desc: 'Deterministic job IDs prevent duplicate alerts. Dispatches across Discord, Slack, custom Webhooks, and SMTP with 5 exponential retries.',
-      badge: 'IDEMPOTENT',
-    },
-  ];
-
-  const capabilities = [
-    {
-      tag: 'KERNEL / PROBES',
-      title: 'Sub-Second Precision Probes',
-      desc: 'Lightweight HTTP/HTTPS executors recording TLS handshake timing, DNS latency, HTTP status codes, and payload fingerprints.',
-      specs: ['Interval: 60s - 3600s', 'Timeout: 1s - 30s', 'Method: GET / HEAD', 'Payload Limit: 1MB'],
-    },
-    {
-      tag: 'SAFETY / SSRF',
-      title: 'Kernel-Level SSRF Hardening',
-      desc: 'Rejects requests to 127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, and AWS/GCP metadata addresses 169.254.169.254.',
-      specs: ['DNS Rebinding Defense', 'IPv4 & IPv6 Mapping Check', 'Scheme Allowlist (HTTP/S)', 'Strict Private CIDR Filter'],
-    },
-    {
-      tag: 'AI / TELEMETRY',
-      title: 'Autonomous Incident Postmortems',
-      desc: 'On incident resolution, an AI analyzer ingests failed response codes, trace latencies, and creates plain-English root cause summaries.',
-      specs: ['Provider: Gemini / Groq', 'Deterministic Fallback Engine', 'Sanitized Error Sanitizer', '10/day Cap per Tenant'],
-    },
-    {
-      tag: 'CHANNELS / CRYPTO',
-      title: 'AES-256-GCM Encrypted Webhooks',
-      desc: 'Webhook tokens, Discord endpoints, and SMTP credentials encrypted at rest with hardware-accelerated AES-256-GCM.',
-      specs: ['Hardware AES-256-GCM', '96-bit Random IV per record', 'Auth Tag Verification', 'Zero Plaintext in Logs'],
-    },
-    {
-      tag: 'PUBLIC / EDGES',
-      title: 'Zero-Auth Public Status Pages',
-      desc: 'Ultra-fast public status pages at /status/:slug. 90-day uptime bars, incident timelines, zero sensitive configuration leakage.',
-      specs: ['30s ISR Edge Cache', 'Zero Auth Required', 'Real-time System Banner', 'Multi-Monitor Aggregation'],
-    },
-    {
-      tag: 'RELIABILITY / STATE',
-      title: 'Row-Lock Anti-Flap Machine',
-      desc: 'Guarantees incident consistency during rapid network blips using PostgreSQL SELECT FOR UPDATE row locking across concurrent workers.',
-      specs: ['3 Failures = Incident OPEN', '2 Successes = Incident RESOLVED', 'Unique OPEN Lock', 'Batch Retention Cleaner'],
-    },
-  ];
-
-  const handleCopyCmd = () => {
-    navigator.clipboard.writeText('docker compose up -d');
-    setCopiedCmd(true);
-    setTimeout(() => setCopiedCmd(false), 2500);
+  const handleHeroSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (heroEmail) setHeroSubmitted(true);
   };
 
+  const handleCtaSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (ctaEmail) setCtaSubmitted(true);
+  };
+
+  const tickerItems = [
+    { service: 'PRODUCTION API', status: '99.99%', latency: '32ms', ok: true },
+    { service: 'PAYMENT GATEWAY', status: '100.0%', latency: '45ms', ok: true },
+    { service: 'AUTH CLUSTER', status: '99.98%', latency: '18ms', ok: true },
+    { service: 'WEBHOOK DISPATCH', status: 'AUTO-RESOLVED', latency: '24ms', ok: true },
+    { service: 'CDN ANYCAST', status: '99.99%', latency: '8ms', ok: true },
+  ];
+
   return (
-    <div className="noc-root">
-      {/* Google Fonts: Barlow Condensed & Share Tech Mono */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap');
-
-        :root {
-          --noc-bg: #060b10;
-          --noc-bg-surface: #0a121a;
-          --noc-bg-surface-2: #0f1c29;
-          --noc-green: #00ff88;
-          --noc-green-dim: rgba(0, 255, 136, 0.15);
-          --noc-green-glow: rgba(0, 255, 136, 0.4);
-          --noc-green-text: rgba(0, 255, 136, 0.7);
-          --noc-amber: #ffa000;
-          --noc-amber-dim: rgba(255, 160, 0, 0.15);
-          --noc-red: #ff3030;
-          --noc-red-dim: rgba(255, 48, 48, 0.15);
-          --noc-border: rgba(0, 255, 136, 0.16);
-          --noc-border-subtle: rgba(0, 255, 136, 0.08);
-          --noc-text-bright: #e0f0e8;
-          --noc-text-muted: rgba(224, 240, 232, 0.55);
-          --noc-text-faint: rgba(224, 240, 232, 0.35);
-        }
-
-        * {
-          box-sizing: border-box;
-          margin: 0;
-          padding: 0;
-        }
-
-        .noc-root {
-          background-color: var(--noc-bg);
-          color: var(--noc-text-bright);
-          font-family: 'Share Tech Mono', monospace;
-          min-height: 100vh;
-          position: relative;
-          overflow-x: hidden;
-          line-height: 1.5;
-        }
-
-        /* Scanlines Overlay */
-        .noc-scanlines {
-          position: fixed;
-          inset: 0;
-          pointer-events: none;
-          z-index: 99;
-          background: repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            rgba(0, 0, 0, 0.22) 2px,
-            rgba(0, 0, 0, 0.22) 4px
-          );
-          opacity: 0.85;
-        }
-
-        /* 48px NOC Grid */
-        .noc-grid {
-          position: fixed;
-          inset: 0;
-          pointer-events: none;
-          z-index: 1;
-          background-image:
-            linear-gradient(rgba(0, 255, 136, 0.035) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 255, 136, 0.035) 1px, transparent 1px);
-          background-size: 48px 48px;
-        }
-
-        /* CRT Vignette */
-        .noc-vignette {
-          position: fixed;
-          inset: 0;
-          pointer-events: none;
-          z-index: 2;
-          background: radial-gradient(ellipse 90% 80% at 50% 50%, transparent 40%, rgba(4, 7, 11, 0.85) 100%);
-        }
-
-        /* Top Hardware Status Bar */
-        .noc-status-bar {
-          position: sticky;
-          top: 0;
-          left: 0;
-          right: 0;
-          z-index: 50;
-          height: 48px;
-          background: rgba(6, 11, 16, 0.94);
-          border-bottom: 1px solid var(--noc-border);
-          backdrop-filter: blur(10px);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 24px;
-          font-size: 11px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-        }
-
-        .noc-brand-group {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-        }
-
-        .noc-logo {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-weight: 900;
-          font-size: 19px;
-          letter-spacing: 0.18em;
-          color: var(--noc-green);
-          text-shadow: 0 0 12px var(--noc-green-glow);
-          text-decoration: none;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .noc-logo-radar {
-          width: 14px;
-          height: 14px;
-          border: 1px solid var(--noc-green);
-          border-radius: 50%;
-          position: relative;
-          display: inline-block;
-        }
-
-        .noc-logo-radar::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 4px;
-          height: 4px;
-          background: var(--noc-green);
-          border-radius: 50%;
-          transform: translate(-50%, -50%);
-          box-shadow: 0 0 6px var(--noc-green);
-        }
-
-        .noc-divider {
-          color: rgba(0, 255, 136, 0.25);
-          user-select: none;
-        }
-
-        .noc-status-indicator {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          color: var(--noc-green);
-          font-weight: 600;
-        }
-
-        .noc-pulse-dot {
-          width: 7px;
-          height: 7px;
-          background: var(--noc-green);
-          border-radius: 50%;
-          box-shadow: 0 0 8px var(--noc-green);
-          animation: noc-blink 2s infinite ease-in-out;
-        }
-
-        @keyframes noc-blink {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.35; transform: scale(0.85); }
-        }
-
-        .noc-nav-actions {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .noc-btn-login {
-          color: var(--noc-text-muted);
-          text-decoration: none;
-          font-size: 11px;
-          letter-spacing: 0.12em;
-          padding: 6px 14px;
-          transition: all 0.2s;
-        }
-
-        .noc-btn-login:hover {
-          color: var(--noc-green);
-        }
-
-        .noc-btn-bezel-sm {
-          background: var(--noc-green);
-          color: #060b10;
-          font-family: 'Barlow Condensed', sans-serif;
-          font-weight: 800;
-          font-size: 13px;
-          letter-spacing: 0.16em;
-          text-transform: uppercase;
-          text-decoration: none;
-          padding: 8px 18px;
-          clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
-          transition: all 0.2s;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        .noc-btn-bezel-sm:hover {
-          box-shadow: 0 0 16px var(--noc-green-glow);
-          transform: translateY(-1px);
-        }
-
-        /* 3-Column Mission Control Hero */
-        .noc-hero-section {
-          position: relative;
-          z-index: 10;
-          display: grid;
-          grid-template-columns: 310px 1fr 320px;
-          min-height: calc(100vh - 48px);
-          border-bottom: 1px solid var(--noc-border);
-        }
-
-        /* Left Column: Zone Panel */
-        .noc-zone-panel {
-          border-right: 1px solid var(--noc-border);
-          background: rgba(10, 18, 26, 0.7);
-          padding: 24px 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .noc-panel-header {
-          font-size: 10px;
-          letter-spacing: 0.22em;
-          color: var(--noc-green-text);
-          text-transform: uppercase;
-          padding-bottom: 10px;
-          border-bottom: 1px solid var(--noc-border-subtle);
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .noc-zone-list {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .noc-zone-item {
-          padding: 12px 14px;
-          border: 1px solid transparent;
-          border-radius: 2px;
-          cursor: pointer;
-          transition: all 0.2s;
-          background: rgba(6, 11, 16, 0.4);
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .noc-zone-item:hover, .noc-zone-item.selected {
-          border-color: var(--noc-green);
-          background: rgba(0, 255, 136, 0.05);
-          box-shadow: inset 0 0 12px rgba(0, 255, 136, 0.04);
-        }
-
-        .noc-zone-item.warn {
-          border-color: rgba(255, 160, 0, 0.25);
-        }
-        .noc-zone-item.crit {
-          border-color: rgba(255, 48, 48, 0.35);
-          background: rgba(255, 48, 48, 0.06);
-        }
-
-        .noc-zone-row-top {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 8px;
-        }
-
-        .noc-zone-name-wrap {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          font-size: 12px;
-          font-weight: 600;
-          color: var(--noc-text-bright);
-        }
-
-        .noc-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          flex-shrink: 0;
-        }
-
-        .noc-dot.ok {
-          background: var(--noc-green);
-          box-shadow: 0 0 8px var(--noc-green);
-        }
-
-        .noc-dot.warn {
-          background: var(--noc-amber);
-          box-shadow: 0 0 8px var(--noc-amber);
-        }
-
-        .noc-dot.crit {
-          background: var(--noc-red);
-          box-shadow: 0 0 8px var(--noc-red);
-          animation: noc-crit-pulse 0.8s infinite;
-        }
-
-        @keyframes noc-crit-pulse {
-          0%, 100% { opacity: 1; transform: scale(1.1); }
-          50% { opacity: 0.3; transform: scale(0.8); }
-        }
-
-        .noc-zone-pct {
-          font-size: 12px;
-          font-weight: 700;
-        }
-        .noc-zone-pct.ok { color: var(--noc-green); }
-        .noc-zone-pct.warn { color: var(--noc-amber); }
-        .noc-zone-pct.crit { color: var(--noc-red); }
-
-        .noc-zone-row-meta {
-          display: flex;
-          justify-content: space-between;
-          font-size: 10px;
-          color: var(--noc-text-faint);
-          padding-left: 18px;
-        }
-
-        /* Center Column: Hero Center */
-        .noc-hero-center {
-          padding: 56px 52px 48px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: flex-start;
-          gap: 28px;
-          background: rgba(6, 11, 16, 0.6);
-        }
-
-        .noc-eyebrow {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          background: var(--noc-green-dim);
-          border: 1px solid var(--noc-border);
-          padding: 6px 16px;
-          font-size: 11px;
-          letter-spacing: 0.22em;
-          text-transform: uppercase;
-          color: var(--noc-green);
-        }
-
-        .noc-hero-h1 {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-weight: 900;
-          font-size: 82px;
-          line-height: 0.92;
-          color: #ffffff;
-          text-transform: uppercase;
-          letter-spacing: -0.03em;
-        }
-
-        .noc-hero-h1 em {
-          font-style: normal;
-          color: var(--noc-green);
-          text-shadow: 0 0 24px var(--noc-green-glow);
-        }
-
-        .noc-hero-sub {
-          font-size: 14px;
-          color: var(--noc-text-muted);
-          max-width: 580px;
-          line-height: 1.7;
-          letter-spacing: 0.03em;
-        }
-
-        .noc-cta-rack {
-          display: flex;
-          gap: 16px;
-          flex-wrap: wrap;
-        }
-
-        .noc-btn-primary {
-          background: var(--noc-green);
-          color: #060b10;
-          font-family: 'Barlow Condensed', sans-serif;
-          font-weight: 900;
-          font-size: 16px;
-          letter-spacing: 0.18em;
-          text-transform: uppercase;
-          padding: 16px 36px;
-          border: none;
-          cursor: pointer;
-          text-decoration: none;
-          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-          box-shadow: 0 0 24px rgba(0, 255, 136, 0.35);
-          transition: all 0.2s;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .noc-btn-primary:hover {
-          box-shadow: 0 0 36px rgba(0, 255, 136, 0.6);
-          transform: translateY(-2px);
-        }
-
-        .noc-btn-secondary {
-          background: transparent;
-          color: var(--noc-green);
-          font-family: 'Barlow Condensed', sans-serif;
-          font-weight: 700;
-          font-size: 16px;
-          letter-spacing: 0.16em;
-          text-transform: uppercase;
-          padding: 16px 30px;
-          border: 1px solid var(--noc-border);
-          cursor: pointer;
-          text-decoration: none;
-          transition: all 0.2s;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .noc-btn-secondary:hover {
-          background: var(--noc-green-dim);
-          border-color: var(--noc-green);
-        }
-
-        /* Industrial Metrics Bar */
-        .noc-metrics-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          width: 100%;
-          border: 1px solid var(--noc-border);
-          background: rgba(10, 18, 26, 0.8);
-          margin-top: 12px;
-        }
-
-        .noc-metric-cell {
-          padding: 18px 20px;
-          border-right: 1px solid var(--noc-border-subtle);
-        }
-
-        .noc-metric-cell:last-child {
-          border-right: none;
-        }
-
-        .noc-metric-val {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-weight: 800;
-          font-size: 38px;
-          line-height: 1;
-          color: var(--noc-green);
-          letter-spacing: -0.02em;
-        }
-
-        .noc-metric-lbl {
-          font-size: 10px;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: var(--noc-text-faint);
-          margin-top: 6px;
-        }
-
-        /* Right Column: Sidebar */
-        .noc-right-sidebar {
-          border-left: 1px solid var(--noc-border);
-          background: rgba(10, 18, 26, 0.7);
-          padding: 24px 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-        }
-
-        .noc-incident-card {
-          padding: 12px 14px;
-          background: rgba(6, 11, 16, 0.6);
-          border: 1px solid var(--noc-border-subtle);
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          border-radius: 2px;
-        }
-
-        .noc-badge {
-          display: inline-block;
-          padding: 2px 8px;
-          font-size: 9px;
-          letter-spacing: 0.16em;
-          font-weight: 700;
-          text-transform: uppercase;
-          width: fit-content;
-        }
-
-        .noc-badge.open {
-          background: var(--noc-red-dim);
-          color: var(--noc-red);
-          border: 1px solid rgba(255, 48, 48, 0.35);
-        }
-
-        .noc-badge.resolved {
-          background: var(--noc-green-dim);
-          color: var(--noc-green);
-          border: 1px solid var(--noc-border);
-        }
-
-        .noc-incident-name {
-          font-size: 12px;
-          font-weight: 700;
-          color: var(--noc-text-bright);
-        }
-
-        .noc-incident-meta {
-          font-size: 10px;
-          color: var(--noc-text-muted);
-        }
-
-        .noc-ai-box {
-          margin-top: 6px;
-          padding: 14px;
-          background: rgba(0, 255, 136, 0.03);
-          border-left: 3px solid var(--noc-green);
-          border-top: 1px solid var(--noc-border-subtle);
-          border-right: 1px solid var(--noc-border-subtle);
-          border-bottom: 1px solid var(--noc-border-subtle);
-          font-size: 11px;
-          line-height: 1.65;
-          color: var(--noc-text-bright);
-        }
-
-        .noc-ai-cursor {
-          display: inline-block;
-          width: 6px;
-          height: 12px;
-          background: var(--noc-green);
-          margin-left: 4px;
-          animation: noc-blink 1s infinite;
-          vertical-align: middle;
-        }
-
-        /* Section Wrappers */
-        .noc-section {
-          position: relative;
-          z-index: 10;
-          padding: 80px 48px;
-          border-bottom: 1px solid var(--noc-border);
-        }
-
-        .noc-section-tag {
-          font-size: 11px;
-          letter-spacing: 0.25em;
-          color: var(--noc-green);
-          text-transform: uppercase;
-          margin-bottom: 12px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .noc-section-title {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-weight: 900;
-          font-size: 48px;
-          text-transform: uppercase;
-          letter-spacing: -0.02em;
-          color: #ffffff;
-          margin-bottom: 16px;
-        }
-
-        .noc-section-sub {
-          font-size: 14px;
-          color: var(--noc-text-muted);
-          max-width: 680px;
-          line-height: 1.6;
-          margin-bottom: 48px;
-        }
-
-        /* Pipeline Steps Grid */
-        .noc-pipeline-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 20px;
-        }
-
-        .noc-pipe-card {
-          background: rgba(10, 18, 26, 0.7);
-          border: 1px solid var(--noc-border);
-          padding: 28px 24px;
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .noc-pipe-step {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 44px;
-          font-weight: 900;
-          color: rgba(0, 255, 136, 0.2);
-          line-height: 1;
-        }
-
-        .noc-pipe-badge {
-          position: absolute;
-          top: 24px;
-          right: 20px;
-          font-size: 9px;
-          letter-spacing: 0.16em;
-          padding: 3px 8px;
-          background: var(--noc-green-dim);
-          color: var(--noc-green);
-          border: 1px solid var(--noc-border);
-        }
-
-        .noc-pipe-title {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 20px;
-          font-weight: 800;
-          letter-spacing: 0.08em;
-          color: #ffffff;
-        }
-
-        .noc-pipe-desc {
-          font-size: 12px;
-          color: var(--noc-text-muted);
-          line-height: 1.6;
-        }
-
-        /* Capabilities Grid */
-        .noc-caps-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 24px;
-        }
-
-        .noc-cap-card {
-          background: rgba(10, 18, 26, 0.8);
-          border: 1px solid var(--noc-border);
-          padding: 28px 24px;
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-          transition: all 0.2s;
-        }
-
-        .noc-cap-card:hover {
-          border-color: var(--noc-green);
-          box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
-        }
-
-        .noc-cap-tag {
-          font-size: 10px;
-          letter-spacing: 0.2em;
-          color: var(--noc-green);
-        }
-
-        .noc-cap-title {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 22px;
-          font-weight: 800;
-          letter-spacing: 0.04em;
-          color: #ffffff;
-        }
-
-        .noc-cap-desc {
-          font-size: 12px;
-          color: var(--noc-text-muted);
-          line-height: 1.65;
-        }
-
-        .noc-cap-specs {
-          margin-top: auto;
-          padding-top: 14px;
-          border-top: 1px solid var(--noc-border-subtle);
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .noc-cap-spec-item {
-          font-size: 10px;
-          color: var(--noc-green-text);
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        /* Terminal Deployment Strip */
-        .noc-terminal-strip {
-          background: rgba(4, 7, 11, 0.95);
-          border: 1px solid var(--noc-border);
-          padding: 32px 36px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 24px;
-          flex-wrap: wrap;
-        }
-
-        .noc-term-left {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .noc-term-label {
-          font-size: 11px;
-          letter-spacing: 0.2em;
-          color: var(--noc-green);
-          text-transform: uppercase;
-        }
-
-        .noc-term-cmd {
-          font-family: 'Share Tech Mono', monospace;
-          font-size: 16px;
-          color: #ffffff;
-          background: rgba(0, 255, 136, 0.06);
-          border: 1px solid var(--noc-border);
-          padding: 10px 18px;
-          border-radius: 2px;
-          user-select: all;
-        }
-
-        /* Footer */
-        .noc-footer {
-          position: relative;
-          z-index: 10;
-          padding: 36px 48px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background: var(--noc-bg);
-          font-size: 11px;
-          color: var(--noc-text-faint);
-          letter-spacing: 0.1em;
-          flex-wrap: wrap;
-          gap: 16px;
-        }
-
-        .noc-footer-links {
-          display: flex;
-          gap: 24px;
-        }
-
-        .noc-footer-links a {
-          color: var(--noc-text-muted);
-          text-decoration: none;
-          transition: color 0.2s;
-        }
-
-        .noc-footer-links a:hover {
-          color: var(--noc-green);
-        }
-
-        /* Responsive Breakpoints */
-        @media (max-width: 1200px) {
-          .noc-hero-section {
-            grid-template-columns: 280px 1fr;
-          }
-          .noc-right-sidebar {
-            display: none;
-          }
-          .noc-pipeline-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          .noc-caps-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-
-        @media (max-width: 860px) {
-          .noc-hero-section {
-            grid-template-columns: 1fr;
-          }
-          .noc-zone-panel {
-            border-right: none;
-            border-bottom: 1px solid var(--noc-border);
-          }
-          .noc-hero-h1 {
-            font-size: 56px;
-          }
-          .noc-metrics-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          .noc-pipeline-grid {
-            grid-template-columns: 1fr;
-          }
-          .noc-caps-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
-
-      {/* Retro Hardware FX */}
-      <div className="noc-scanlines" />
-      <div className="noc-grid" />
-      <div className="noc-vignette" />
-
-      {/* Top Hardware Status Bar */}
-      <header className="noc-status-bar">
-        <div className="noc-brand-group">
-          <Link href="/" className="noc-logo">
-            <span className="noc-logo-radar" />
-            PULSEWATCH
-          </Link>
-          <span className="noc-divider">|</span>
-          <span style={{ color: 'var(--noc-text-faint)' }}>NOC CONSOLE v4.1.2</span>
-          <span className="noc-divider">|</span>
-          <div className="noc-status-indicator">
-            <span className="noc-pulse-dot" />
-            <span>ALL SYSTEMS NOMINAL</span>
-          </div>
-          <span className="noc-divider">|</span>
-          <span style={{ color: 'var(--noc-text-muted)' }}>{utcTime}</span>
-        </div>
-
-        <div className="noc-nav-actions">
-          <Link href="/login" className="noc-btn-login">
-            SIGN IN
-          </Link>
-          <Link href="/dashboard" className="noc-btn-login">
-            CONSOLE
-          </Link>
-          <Link href="/register" className="noc-btn-bezel-sm">
-            LAUNCH NOC →
-          </Link>
-        </div>
-      </header>
-
-      {/* 3-Column Mission Control Hero */}
-      <main className="noc-hero-section">
-        {/* Left Column: Service Zones */}
-        <aside className="noc-zone-panel">
-          <div className="noc-panel-header">
-            <span>ACTIVE SERVICE ZONES</span>
-            <span style={{ color: 'var(--noc-green)' }}>7/7 LIVE</span>
-          </div>
-
-          <div className="noc-zone-list">
-            {zones.map((zone, idx) => (
-              <div
-                key={zone.name}
-                className={`noc-zone-item ${zone.status} ${selectedZone === idx ? 'selected' : ''}`}
-                onClick={() => setSelectedZone(idx)}
-              >
-                <div className="noc-zone-row-top">
-                  <div className="noc-zone-name-wrap">
-                    <span className={`noc-dot ${zone.status}`} />
-                    <span>{zone.name}</span>
-                  </div>
-                  <span className={`noc-zone-pct ${zone.status}`}>{zone.uptime}</span>
+    <div className="min-h-screen bg-white text-[#171e19] font-satoshi selection:bg-[#ffe17c] selection:text-[#171e19] overflow-x-hidden">
+      {/* 1. FIXED NAVIGATION */}
+      <Navbar />
+
+      <main className="pt-20">
+        {/* 2. HERO SECTION */}
+        <section className="relative px-6 lg:px-8 pt-20 pb-24 bg-grid-pattern overflow-hidden">
+          <div className="max-w-5xl mx-auto text-center space-y-8">
+            {/* Badge with yellow dot indicator */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-[#171e19]/10 bg-white/80 backdrop-blur-xs shadow-xs">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#ffe17c] animate-pulse" />
+              <span className="font-satoshi text-xs font-bold uppercase tracking-widest text-[#171e19]">
+                PULSEWATCH 2.0 &bull; LIVE TELEMETRY ENGINE
+              </span>
+            </div>
+
+            {/* Headline: 'Anton' (text-6xl to 9xl) with a yellow highlight bar behind final word */}
+            <h1 className="font-anton text-6xl sm:text-7xl md:text-8xl lg:text-9xl uppercase tracking-normal text-[#171e19] leading-[0.9]">
+              KNOW BEFORE YOUR <span className="yellow-highlight">USERS DO.</span>
+            </h1>
+
+            {/* Subheadline: 'Satoshi' (text-lg, text-charcoal/70%, max-w-xl) */}
+            <p className="font-satoshi text-lg sm:text-xl text-[#171e19]/70 max-w-xl mx-auto leading-relaxed">
+              Stop relying on angry customer tweets. PulseWatch executes high-precision queue probes, halts alert flapping, and writes automated AI incident postmortems in 2 seconds.
+            </p>
+
+            {/* Waitlist form: side-by-side input and massive 'Anton' button */}
+            <div className="max-w-lg mx-auto pt-2">
+              {heroSubmitted ? (
+                <div className="p-4 rounded-xl bg-[#ffe17c] text-[#171e19] font-satoshi font-bold text-center border-2 border-[#171e19]">
+                  🎉 Welcome to the frontline. Redirecting to instant registration...
+                  <Link href="/register" className="block text-sm underline mt-1">
+                    Click here to initialize your account →
+                  </Link>
                 </div>
-                <div className="noc-zone-row-meta">
-                  <span>{zone.region}</span>
-                  <span>{zone.latency}</span>
-                </div>
+              ) : (
+                <form onSubmit={handleHeroSubmit} className="flex flex-col sm:flex-row gap-3 items-stretch">
+                  <input
+                    type="email"
+                    placeholder="Enter your work email..."
+                    value={heroEmail}
+                    onChange={(e) => setHeroEmail(e.target.value)}
+                    required
+                    className="flex-1 px-6 py-4 rounded-lg border border-[#171e19]/20 bg-white text-base font-satoshi text-[#171e19] placeholder:text-[#171e19]/40 focus:outline-none focus:border-[#171e19] shadow-xs"
+                  />
+                  <button
+                    type="submit"
+                    className="font-anton text-xl uppercase tracking-wider px-8 py-4 bg-[#ffe17c] text-[#171e19] rounded-lg border-2 border-[#171e19] hover:bg-[#ffd850] hover:scale-105 active:scale-95 transition-all duration-200 shadow-md cursor-pointer"
+                  >
+                    DEPLOY FREE →
+                  </button>
+                </form>
+              )}
+              <div className="mt-3 flex items-center justify-center gap-6 text-xs text-[#171e19]/60 font-medium">
+                <span>✓ 10 Monitored Endpoints</span>
+                <span>✓ 60-Second Checks</span>
+                <span>✓ No Credit Card Needed</span>
               </div>
-            ))}
-          </div>
-
-          <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--noc-border-subtle)' }}>
-            <div style={{ fontSize: '10px', color: 'var(--noc-text-faint)', letterSpacing: '0.15em' }}>
-              PROBE SAMPLING: 60s INTERVAL
             </div>
-            <div style={{ fontSize: '10px', color: 'var(--noc-green-text)', marginTop: '4px' }}>
-              AUTO-FAILOVER: ENABLED
-            </div>
-          </div>
-        </aside>
 
-        {/* Center Column: Core Console Proposition */}
-        <section className="noc-hero-center">
-          <div className="noc-eyebrow">
-            <span className="noc-pulse-dot" />
-            MISSION CRITICAL UPTIME & TELEMETRY
-          </div>
-
-          <h1 className="noc-hero-h1">
-            KNOW BEFORE<br />
-            YOUR USERS<br />
-            <em>DO.</em>
-          </h1>
-
-          <p className="noc-hero-sub">
-            Sub-second distributed HTTP probes. Flapping-proof 3-failure incident consensus.
-            Autonomous AI root-cause postmortems. Instant multi-channel dispatch with zero-auth public status pages.
-          </p>
-
-          <div className="noc-cta-rack">
-            <Link href="/register" className="noc-btn-primary">
-              LAUNCH CONSOLE →
-            </Link>
-            <Link href="/dashboard" className="noc-btn-secondary">
-              OPEN LIVE DASHBOARD
-            </Link>
-          </div>
-
-          {/* Industrial Hardware Metrics Rack */}
-          <div className="noc-metrics-grid">
-            <div className="noc-metric-cell">
-              <div className="noc-metric-val">38ms</div>
-              <div className="noc-metric-lbl">Avg Latency</div>
-            </div>
-            <div className="noc-metric-cell">
-              <div className="noc-metric-val">99.98%</div>
-              <div className="noc-metric-lbl">30d Consensus</div>
-            </div>
-            <div className="noc-metric-cell">
-              <div className="noc-metric-val">1,440</div>
-              <div className="noc-metric-lbl">Probes / Day</div>
-            </div>
-            <div className="noc-metric-cell">
-              <div className="noc-metric-val">&lt; 3s</div>
-              <div className="noc-metric-lbl">Incident TTD</div>
+            {/* Abstract UI Mockup */}
+            <div className="pt-12">
+              <AbstractUIMockup />
             </div>
           </div>
         </section>
 
-        {/* Right Column: Live Incident Log & AI Summaries */}
-        <aside className="noc-right-sidebar">
-          <div className="noc-panel-header">
-            <span>LIVE INCIDENT STREAM</span>
-            <span style={{ color: 'var(--noc-amber)' }}>1 ACTIVE</span>
-          </div>
+        {/* 3. MARQUEE TELEMETRY TICKER */}
+        <section className="border-y border-[#171e19]/10 bg-[#171e19] text-white py-3.5 overflow-hidden">
+          <Marquee className="py-0 font-satoshi text-xs font-semibold" pauseOnHover={true} repeat={3}>
+            {tickerItems.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-4 px-8 border-r border-white/10">
+                <span className="h-2 w-2 rounded-full bg-[#ffe17c]" />
+                <span className="font-anton text-sm tracking-wide text-white uppercase">{item.service}</span>
+                <span className="text-[#ffe17c] font-mono">{item.status}</span>
+                <span className="text-[#b7c6c2] font-mono">({item.latency})</span>
+              </div>
+            ))}
+          </Marquee>
+        </section>
 
-          <div className="noc-incident-card" style={{ borderColor: 'rgba(255, 48, 48, 0.4)' }}>
-            <span className="noc-badge open">CRIT / OPEN</span>
-            <div className="noc-incident-name">Webhook Relay</div>
-            <div className="noc-incident-meta">ECONNREFUSED · 12m duration · 3 failed probes</div>
-          </div>
+        {/* 4. PROBLEM-SOLUTION CONTRAST SECTION */}
+        <section id="problem-solution" className="w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            {/* Left Half (Problem): bg-#charcoal, text-white, 'THE OLD WAY' in Anton with muted sage text and red X icons */}
+            <div className="bg-[#171e19] text-white p-12 lg:p-20 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/10">
+              <div className="space-y-8 max-w-xl">
+                <div className="inline-block px-3.5 py-1 rounded-full bg-red-500/20 text-red-400 font-anton text-xs uppercase tracking-widest">
+                  THE BROKEN REALITY
+                </div>
 
-          <div className="noc-incident-card">
-            <span className="noc-badge resolved">RESOLVED</span>
-            <div className="noc-incident-name">Payment Gateway</div>
-            <div className="noc-incident-meta">HTTP 503 Spike · 2h duration · AI postmortem ready</div>
-          </div>
+                <h2 className="font-anton text-5xl sm:text-6xl lg:text-7xl text-white uppercase leading-[0.9]">
+                  THE OLD WAY<span className="text-red-500">.</span>
+                </h2>
 
-          <div className="noc-incident-card">
-            <span className="noc-badge resolved">RESOLVED</span>
-            <div className="noc-incident-name">Auth Service</div>
-            <div className="noc-incident-meta">TLS Cert Renewal · 31m · auto-recovered</div>
-          </div>
+                <p className="font-satoshi text-base sm:text-lg text-[#b7c6c2] leading-relaxed">
+                  Legacy monitoring tools page you at 3:12 AM for a single dropped packet, clutter your channels with unreadable stack traces, and charge thousands of dollars for basic status pages.
+                </p>
 
-          <div style={{ marginTop: '8px' }}>
-            <div className="noc-panel-header">
-              <span>AUTONOMOUS AI POSTMORTEM</span>
-              <span style={{ color: 'var(--noc-green)' }}>LLM v2</span>
-            </div>
-
-            <div className="noc-ai-box">
-              &quot;Payment latency spike traced to upstream PSP rate limit at 14:22 UTC.
-              Auto-resolved after 2h 7m. No data loss. Recommend circuit-breaker threshold reduction.&quot;
-              <span className="noc-ai-cursor" />
-            </div>
-          </div>
-        </aside>
-      </main>
-
-      {/* Transmission Pipeline Section */}
-      <section className="noc-section">
-        <div className="noc-section-tag">
-          <span className="noc-pulse-dot" />
-          SYSTEM ARCHITECTURE
-        </div>
-        <h2 className="noc-section-title">TRANSMISSION PIPELINE</h2>
-        <p className="noc-section-sub">
-          Engineered for zero false alarms. Every ping travels through a four-stage state machine backed by Redis queues and row-level PostgreSQL locking.
-        </p>
-
-        <div className="noc-pipeline-grid">
-          {pipeline.map((item) => (
-            <div key={item.step} className="noc-pipe-card">
-              <span className="noc-pipe-badge">{item.badge}</span>
-              <div className="noc-pipe-step">{item.step}</div>
-              <h3 className="noc-pipe-title">{item.title}</h3>
-              <p className="noc-pipe-desc">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Technical Capabilities Matrix */}
-      <section className="noc-section" style={{ background: 'rgba(10, 18, 26, 0.4)' }}>
-        <div className="noc-section-tag">
-          <span className="noc-pulse-dot" />
-          TECHNICAL SPECIFICATIONS
-        </div>
-        <h2 className="noc-section-title">OPERATIONAL MATRIX</h2>
-        <p className="noc-section-sub">
-          Direct, zero-compromise developer ergonomics. Hand-crafted components, strict typing, and bulletproof security guards.
-        </p>
-
-        <div className="noc-caps-grid">
-          {capabilities.map((cap) => (
-            <div key={cap.title} className="noc-cap-card">
-              <div className="noc-cap-tag">{cap.tag}</div>
-              <h3 className="noc-cap-title">{cap.title}</h3>
-              <p className="noc-cap-desc">{cap.desc}</p>
-              <div className="noc-cap-specs">
-                {cap.specs.map((spec) => (
-                  <div key={spec} className="noc-cap-spec-item">
-                    <span style={{ color: 'var(--noc-green)' }}>›</span>
-                    <span>{spec}</span>
+                <div className="space-y-5 pt-4">
+                  <div className="flex items-start gap-4">
+                    <XCircle className="h-6 w-6 text-red-500 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-anton text-lg tracking-wide uppercase text-white">
+                        FALSE-POSITIVE ALERT STORMS
+                      </h4>
+                      <p className="font-satoshi text-sm text-[#b7c6c2] mt-0.5">
+                        Flapping network routes wake up engineers for temporary blips instead of confirmed outages.
+                      </p>
+                    </div>
                   </div>
-                ))}
+
+                  <div className="flex items-start gap-4">
+                    <XCircle className="h-6 w-6 text-red-500 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-anton text-lg tracking-wide uppercase text-white">
+                        CRYPTIC JARGON STACK TRACES
+                      </h4>
+                      <p className="font-satoshi text-sm text-[#b7c6c2] mt-0.5">
+                        Support teams scramble trying to decode raw curl timeouts while customers complain publicly.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <XCircle className="h-6 w-6 text-red-500 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-anton text-lg tracking-wide uppercase text-white">
+                        $400/MONTH STATUSPAGE EXTORTION
+                      </h4>
+                      <p className="font-satoshi text-sm text-[#b7c6c2] mt-0.5">
+                        Simple public communication pages locked behind extortionate enterprise pricing tiers.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* Quick Deploy Strip */}
-      <section className="noc-section">
-        <div className="noc-terminal-strip">
-          <div className="noc-term-left">
-            <span className="noc-term-label">SELF-HOSTED NOC IN 30 SECONDS</span>
-            <span style={{ fontSize: '13px', color: 'var(--noc-text-muted)' }}>
-              Spin up the entire Postgres + Redis + API + Worker + Next.js stack with a single command:
+            {/* Right Half (Solution): bg-#272727 with yellow accent border, 'THE FLUX WAY' in Anton with yellow check-circle icons and crisp white text */}
+            <div className="bg-[#272727] text-white p-12 lg:p-20 flex flex-col justify-between border-t-4 lg:border-t-0 border-[#ffe17c]">
+              <div className="space-y-8 max-w-xl">
+                <div className="inline-block px-3.5 py-1 rounded-full bg-[#ffe17c]/20 text-[#ffe17c] font-anton text-xs uppercase tracking-widest border border-[#ffe17c]/30">
+                  THE NEW STANDARD
+                </div>
+
+                <h2 className="font-anton text-5xl sm:text-6xl lg:text-7xl text-white uppercase leading-[0.9]">
+                  THE PULSEWATCH WAY<span className="text-[#ffe17c]">.</span>
+                </h2>
+
+                <p className="font-satoshi text-base sm:text-lg text-white/80 leading-relaxed">
+                  Engineered with mathematical anti-flapping consensus, instant AI incident postmortems, and clean public status pages designed for indie founders and engineering teams.
+                </p>
+
+                <div className="space-y-5 pt-4">
+                  <div className="flex items-start gap-4">
+                    <CheckCircle2 className="h-6 w-6 text-[#ffe17c] shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-anton text-lg tracking-wide uppercase text-[#ffe17c]">
+                        3-STRIKE STRICT CONSENSUS
+                      </h4>
+                      <p className="font-satoshi text-sm text-white/80 mt-0.5">
+                        Exactly 3 consecutive failures trigger a verified DOWN incident; 2 passes trigger auto-recovery. Zero flapping.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <CheckCircle2 className="h-6 w-6 text-[#ffe17c] shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-anton text-lg tracking-wide uppercase text-[#ffe17c]">
+                        PLAIN-ENGLISH AI POSTMORTEMS
+                      </h4>
+                      <p className="font-satoshi text-sm text-white/80 mt-0.5">
+                        AI reads headers, DNS latency, and response codes to write ready-to-share summaries in under 3 seconds.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <CheckCircle2 className="h-6 w-6 text-[#ffe17c] shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-anton text-lg tracking-wide uppercase text-[#ffe17c]">
+                        FREE UNBRANDED STATUS BROADSHEET
+                      </h4>
+                      <p className="font-satoshi text-sm text-white/80 mt-0.5">
+                        High-traffic public status wireframes with 30-second ISR caching that never leak internal secrets or URLs.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 5. BENTO FEATURE GRID */}
+        <section id="features" className="py-24 px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+            <div className="inline-block px-3.5 py-1 rounded-full border border-[#171e19]/10 bg-[#f8f9fa] font-anton text-xs uppercase tracking-widest text-[#171e19]">
+              ARCHITECTURAL CAPABILITIES
+            </div>
+            <h2 className="font-anton text-5xl sm:text-6xl lg:text-7xl uppercase leading-[0.9] text-[#171e19]">
+              EVERY TOOL NEEDED FOR <span className="yellow-highlight">100% UPTIME.</span>
+            </h2>
+            <p className="font-satoshi text-lg text-[#171e19]/70">
+              Built on production-grade Redis schedulers, BullMQ concurrency, and zero-trust security.
+            </p>
+          </div>
+
+          {/* 3-column Grid with auto-rows (Feature 1 & 4 span 2 columns) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Feature 1 (Spans 2 columns) */}
+            <div className="lg:col-span-2 rounded-2xl p-8 lg:p-10 bg-[#f8f9fa] border border-[#171e19]/10 brutalist-card flex flex-col justify-between min-h-[380px]">
+              <div className="space-y-4">
+                <span className="px-3 py-1 rounded-full bg-[#171e19] text-[#ffe17c] font-anton text-xs uppercase">
+                  KERNEL PROBES
+                </span>
+                <h3 className="font-anton text-3xl sm:text-4xl uppercase text-[#171e19]">
+                  SUB-SECOND MULTI-REGION HTTP PROBES
+                </h3>
+                <p className="font-satoshi text-base text-[#171e19]/70 max-w-lg leading-relaxed">
+                  Scheduled outward health checks executing GET and HEAD requests with customizable timeouts (1s to 30s) and status code boundaries.
+                </p>
+              </div>
+
+              {/* Abstract pulse blocks */}
+              <div className="mt-6 pt-6 border-t border-[#171e19]/10 grid grid-cols-3 gap-4 font-satoshi text-xs">
+                <div className="p-4 rounded-xl bg-white border border-[#171e19]/10">
+                  <div className="text-[#171e19]/60 font-medium">US-East Node</div>
+                  <div className="font-anton text-2xl text-[#171e19] mt-1">12ms</div>
+                  <div className="flex items-center gap-1.5 text-xs text-green-600 font-bold mt-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                    Nominal
+                  </div>
+                </div>
+                <div className="p-4 rounded-xl bg-white border border-[#171e19]/10">
+                  <div className="text-[#171e19]/60 font-medium">EU-West Node</div>
+                  <div className="font-anton text-2xl text-[#171e19] mt-1">18ms</div>
+                  <div className="flex items-center gap-1.5 text-xs text-green-600 font-bold mt-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                    Nominal
+                  </div>
+                </div>
+                <div className="p-4 rounded-xl bg-white border border-[#171e19]/10">
+                  <div className="text-[#171e19]/60 font-medium">AP-South Node</div>
+                  <div className="font-anton text-2xl text-[#171e19] mt-1">45ms</div>
+                  <div className="flex items-center gap-1.5 text-xs text-green-600 font-bold mt-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                    Nominal
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature 2 (1 col - Dark Contrast) */}
+            <div className="rounded-2xl p-8 lg:p-10 bg-[#171e19] text-white border border-white/10 brutalist-card flex flex-col justify-between min-h-[380px]">
+              <div className="space-y-4">
+                <span className="px-3 py-1 rounded-full bg-[#ffe17c] text-[#171e19] font-anton text-xs uppercase">
+                  DEFENSE KERNEL
+                </span>
+                <h3 className="font-anton text-3xl uppercase text-white">
+                  SSRF ZERO-TRUST SHIELD
+                </h3>
+                <p className="font-satoshi text-sm text-[#b7c6c2] leading-relaxed">
+                  Resolves target DNS to reject private IP ranges (RFC 1918), localhost, and AWS/GCP cloud metadata.
+                </p>
+              </div>
+
+              {/* Code snippet in bg-dark */}
+              <div className="mt-6 p-4 rounded-xl bg-[#272727] border border-white/10 font-mono text-xs text-[#ffe17c] space-y-1.5">
+                <div className="text-white/40">// SSRF Validator Gate</div>
+                <div>IF ip IN ['127.0.0.1', '169.254.169.254']</div>
+                <div className="text-red-400">&gt;&gt; REJECT_PROBE: PROTOCOL_VIOLATION</div>
+              </div>
+            </div>
+
+            {/* Feature 3 (1 col) */}
+            <div className="rounded-2xl p-8 lg:p-10 bg-[#f8f9fa] border border-[#171e19]/10 brutalist-card flex flex-col justify-between min-h-[380px]">
+              <div className="space-y-4">
+                <span className="px-3 py-1 rounded-full bg-[#171e19] text-[#ffe17c] font-anton text-xs uppercase">
+                  DISPATCH KERNEL
+                </span>
+                <h3 className="font-anton text-3xl uppercase text-[#171e19]">
+                  OMNI-CHANNEL ALERTS
+                </h3>
+                <p className="font-satoshi text-sm text-[#171e19]/70 leading-relaxed">
+                  Deduplicated alerts broadcast across Discord, Slack, email, and generic webhooks with 5 exponential retries.
+                </p>
+              </div>
+
+              {/* Avatar / Channel Stacks */}
+              <div className="mt-6 p-4 rounded-xl bg-white border border-[#171e19]/10 flex items-center justify-between">
+                <div className="flex -space-x-2">
+                  <div className="h-9 w-9 rounded-full bg-[#5865F2] text-white flex items-center justify-center font-anton text-xs border-2 border-white">
+                    DC
+                  </div>
+                  <div className="h-9 w-9 rounded-full bg-[#4A154B] text-white flex items-center justify-center font-anton text-xs border-2 border-white">
+                    SL
+                  </div>
+                  <div className="h-9 w-9 rounded-full bg-[#171e19] text-[#ffe17c] flex items-center justify-center font-anton text-xs border-2 border-white">
+                    WH
+                  </div>
+                </div>
+                <span className="font-anton text-xs text-[#171e19] uppercase">
+                  DETERMINISTIC IDEMPOTENCY
+                </span>
+              </div>
+            </div>
+
+            {/* Feature 4 (Spans 2 columns) */}
+            <div className="lg:col-span-2 rounded-2xl p-8 lg:p-10 bg-[#f8f9fa] border border-[#171e19]/10 brutalist-card flex flex-col justify-between min-h-[380px]">
+              <div className="space-y-4">
+                <span className="px-3 py-1 rounded-full bg-[#171e19] text-[#ffe17c] font-anton text-xs uppercase">
+                  AI SYNTHESIS
+                </span>
+                <h3 className="font-anton text-3xl sm:text-4xl uppercase text-[#171e19]">
+                  EXECUTIVE POSTMORTEMS IN SECONDS
+                </h3>
+                <p className="font-satoshi text-base text-[#171e19]/70 max-w-lg leading-relaxed">
+                  Autonomous Google Gemini / Groq summaries analyze raw probe telemetry into crisp root-cause briefs ready for immediate client updates.
+                </p>
+              </div>
+
+              <div className="mt-6 p-5 rounded-xl bg-white border border-[#171e19]/10 space-y-2">
+                <div className="flex items-center justify-between font-satoshi text-xs font-bold text-[#171e19]">
+                  <span className="flex items-center gap-1.5">
+                    <Sparkles className="h-4 w-4 text-[#ffe17c] fill-[#ffe17c]" />
+                    AI Incident Synthesis #8402
+                  </span>
+                  <span className="text-[#171e19]/50 font-mono">TTD: 2.1s</span>
+                </div>
+                <p className="font-satoshi text-sm text-[#171e19]/80 leading-snug">
+                  "Production Gateway returned HTTP 504 due to upstream database connection pool exhaustion. 3 consecutive failed probes triggered Discord alert. Auto-resolved upon service restart."
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 6. HOW IT WORKS (1:2 RATIO LAYOUT) */}
+        <section id="how-it-works" className="py-24 bg-[#171e19] text-white">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+              {/* Left Column: Sticky 'Anton' title (text-7xl to 8xl) */}
+              <div className="lg:col-span-4 lg:sticky lg:top-28 space-y-4">
+                <div className="inline-block px-3.5 py-1 rounded-full bg-[#ffe17c]/20 text-[#ffe17c] font-anton text-xs uppercase tracking-widest border border-[#ffe17c]/30">
+                  EXECUTION PIPELINE
+                </div>
+                <h2 className="font-anton text-6xl sm:text-7xl lg:text-8xl uppercase leading-[0.9] text-white">
+                  HOW IT <span className="text-[#ffe17c]">WORKS.</span>
+                </h2>
+                <p className="font-satoshi text-base text-[#b7c6c2] leading-relaxed">
+                  Engineered from the ground up for zero flapping, row-level locking consistency, and automated recovery.
+                </p>
+              </div>
+
+              {/* Right Column: Vertical stack of three steps */}
+              <div className="lg:col-span-8 space-y-6">
+                {/* Step 1 */}
+                <div className="group p-8 lg:p-10 rounded-2xl bg-[#272727] border border-white/10 brutalist-card hover:border-[#ffe17c]/60 transition-all">
+                  <div className="flex items-start justify-between">
+                    <span className="font-anton text-7xl sm:text-8xl leading-none text-[#ffe17c]/20 group-hover:text-[#ffe17c] transition-colors duration-300">
+                      01
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-white/10 text-white font-satoshi text-xs font-bold uppercase">
+                      60-SECOND PROBES
+                    </span>
+                  </div>
+                  <h3 className="font-anton text-3xl uppercase text-white mt-4 mb-2">
+                    REDIS BULLMQ SCHEDULER DISPATCH
+                  </h3>
+                  <p className="font-satoshi text-base text-[#b7c6c2] leading-relaxed">
+                    Worker processes wake up every 60 seconds, validate target URLs through our SSRF barrier, and capture TLS handshake, latency, and status response codes.
+                  </p>
+                </div>
+
+                {/* Step 2 */}
+                <div className="group p-8 lg:p-10 rounded-2xl bg-[#272727] border border-white/10 brutalist-card hover:border-[#ffe17c]/60 transition-all">
+                  <div className="flex items-start justify-between">
+                    <span className="font-anton text-7xl sm:text-8xl leading-none text-[#ffe17c]/20 group-hover:text-[#ffe17c] transition-colors duration-300">
+                      02
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-white/10 text-white font-satoshi text-xs font-bold uppercase">
+                      3-STRIKE CONSENSUS
+                    </span>
+                  </div>
+                  <h3 className="font-anton text-3xl uppercase text-white mt-4 mb-2">
+                    ROW-LEVEL STATE MACHINE LATCH
+                  </h3>
+                  <p className="font-satoshi text-base text-[#b7c6c2] leading-relaxed">
+                    Database locks evaluate check records. A single drop does nothing. Exactly 3 consecutive failures open an incident state, eliminating false alarms forever.
+                  </p>
+                </div>
+
+                {/* Step 3 */}
+                <div className="group p-8 lg:p-10 rounded-2xl bg-[#272727] border border-white/10 brutalist-card hover:border-[#ffe17c]/60 transition-all">
+                  <div className="flex items-start justify-between">
+                    <span className="font-anton text-7xl sm:text-8xl leading-none text-[#ffe17c]/20 group-hover:text-[#ffe17c] transition-colors duration-300">
+                      03
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-white/10 text-white font-satoshi text-xs font-bold uppercase">
+                      INSTANT DISPATCH & AI
+                    </span>
+                  </div>
+                  <h3 className="font-anton text-3xl uppercase text-white mt-4 mb-2">
+                    IDEMPOTENT ALERTS & POSTMORTEMS
+                  </h3>
+                  <p className="font-satoshi text-base text-[#b7c6c2] leading-relaxed">
+                    Alerts trigger across Discord, Slack, and webhooks with deterministic job keys. Two subsequent successful checks auto-resolve the issue and synthesize an AI postmortem.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 7. HIGH-CONTRAST TESTIMONIALS */}
+        <section id="testimonials" className="py-24 bg-white">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3 px-6">
+            <div className="inline-block px-3.5 py-1 rounded-full border border-[#171e19]/10 bg-[#f8f9fa] font-anton text-xs uppercase tracking-widest text-[#171e19]">
+              CUSTOMER EXPERIENCES
+            </div>
+            <h2 className="font-anton text-5xl sm:text-6xl lg:text-7xl uppercase leading-[0.9] text-[#171e19]">
+              TRUSTED BY DEVELOPERS <span className="yellow-highlight">WORLDWIDE.</span>
+            </h2>
+            <p className="font-satoshi text-lg text-[#171e19]/70">
+              Here is what founders and reliability engineers say after migrating to PulseWatch.
+            </p>
+          </div>
+
+          <BrutalistTestimonials />
+        </section>
+
+        {/* 8. FINAL HIGH-IMPACT CTA SECTION (BG-#FFE17C) */}
+        <section className="relative py-28 bg-[#ffe17c] text-[#171e19] overflow-hidden">
+          {/* Background decorative elements: massive 'Anton' text overlays with 10% opacity */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none opacity-10 overflow-hidden">
+            <span className="font-anton text-[18vw] leading-none text-[#171e19] whitespace-nowrap">
+              UPTIME NEVER SLEEPS
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <code className="noc-term-cmd">docker compose up -d</code>
-            <button
-              onClick={handleCopyCmd}
-              className="noc-btn-bezel-sm"
-              style={{ cursor: 'pointer', border: 'none' }}
-            >
-              {copiedCmd ? 'COPIED ✓' : 'COPY CMD'}
-            </button>
+          <div className="relative max-w-5xl mx-auto px-6 lg:px-8 text-center space-y-8 z-10">
+            <h2 className="font-anton text-6xl sm:text-7xl lg:text-8xl uppercase tracking-tight leading-[0.9] text-[#171e19]">
+              START MONITORING IN UNDER 60 SECONDS.
+            </h2>
+
+            <p className="font-satoshi text-xl sm:text-2xl text-[#171e19]/80 max-w-2xl mx-auto font-medium leading-relaxed">
+              Join thousands of indie founders and engineering teams who sleep through the night knowing PulseWatch is guarding their stack.
+            </p>
+
+            {/* Centralized Form with input and button */}
+            <div className="max-w-md mx-auto pt-4">
+              {ctaSubmitted ? (
+                <div className="p-5 rounded-2xl bg-[#171e19] text-[#ffe17c] font-satoshi font-bold text-center shadow-xl">
+                  ✓ Dispatch queued! Redirecting you now...
+                  <Link href="/register" className="block text-sm text-white underline mt-1">
+                    Continue to Dashboard →
+                  </Link>
+                </div>
+              ) : (
+                <form onSubmit={handleCtaSubmit} className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="email"
+                    placeholder="Enter your email..."
+                    value={ctaEmail}
+                    onChange={(e) => setCtaEmail(e.target.value)}
+                    required
+                    className="flex-1 px-6 py-4 rounded-full bg-white text-[#171e19] font-satoshi placeholder:text-[#171e19]/40 border-2 border-[#171e19] focus:outline-none shadow-md"
+                  />
+                  <button
+                    type="submit"
+                    className="font-anton text-lg uppercase tracking-wider px-8 py-4 bg-[#171e19] text-white rounded-full hover:bg-[#272727] hover:scale-105 active:scale-95 transition-transform duration-200 shadow-xl cursor-pointer"
+                  >
+                    DEPLOY NOW →
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* Console Footer */}
-      <footer className="noc-footer">
-        <div>
-          <span>PULSEWATCH NOC CONSOLE</span>
-          <span className="noc-divider" style={{ margin: '0 10px' }}>|</span>
-          <span>STATION ID: 0x4F4C</span>
-          <span className="noc-divider" style={{ margin: '0 10px' }}>|</span>
-          <span>ALL SIGNALS ENCRYPTED</span>
-        </div>
+      {/* 9. BRUTALIST FOOTER */}
+      <footer className="bg-[#171e19] text-white py-16 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-white/10">
+            <div className="space-y-4">
+              <span className="font-anton text-3xl uppercase tracking-normal text-white">
+                PULSEWATCH<span className="text-[#ffe17c]">.</span>
+              </span>
+              <p className="font-satoshi text-sm text-[#b7c6c2] leading-relaxed">
+                The high-precision uptime platform with mathematical flap-proofing, automated AI postmortems, and public status pages.
+              </p>
+            </div>
 
-        <div className="noc-footer-links">
-          <Link href="/dashboard">DASHBOARD</Link>
-          <Link href="/login">SIGN IN</Link>
-          <Link href="/register">CREATE ACCOUNT</Link>
+            <div>
+              <h4 className="font-anton text-base uppercase text-[#ffe17c] mb-3">PLATFORM</h4>
+              <ul className="space-y-2 text-sm text-[#b7c6c2] font-satoshi">
+                <li><Link href="/dashboard" className="hover:text-white">Console Dashboard</Link></li>
+                <li><Link href="/status/demo" className="hover:text-white">Public Status Broadsheet</Link></li>
+                <li><Link href="/login" className="hover:text-white">Operator Sign In</Link></li>
+                <li><Link href="/register" className="hover:text-white">Free Registration</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-anton text-base uppercase text-[#ffe17c] mb-3">INFRASTRUCTURE</h4>
+              <ul className="space-y-2 text-sm text-[#b7c6c2] font-satoshi">
+                <li>Queue: Redis + BullMQ v5</li>
+                <li>SSRF Guard: RFC 1918 Enforced</li>
+                <li>Database: PostgreSQL / Prisma</li>
+                <li>Encryption: AES-256-GCM</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-anton text-base uppercase text-[#ffe17c] mb-3">SELF-HOST</h4>
+              <p className="font-satoshi text-xs text-[#b7c6c2] mb-3">
+                Run the complete monorepo locally with Docker Compose in 60 seconds.
+              </p>
+              <div className="p-3 rounded-lg bg-[#272727] font-mono text-xs text-[#ffe17c]">
+                docker compose up -d
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#b7c6c2] font-satoshi gap-4">
+            <div>&copy; 2026 PulseWatch Inc. All rights reserved.</div>
+            <div className="flex gap-6">
+              <span className="hover:text-white cursor-pointer">Privacy Policy</span>
+              <span className="hover:text-white cursor-pointer">Terms of Service</span>
+              <span className="hover:text-white cursor-pointer">Security Overview</span>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
